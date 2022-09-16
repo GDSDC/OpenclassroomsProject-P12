@@ -7,8 +7,8 @@ from core.client_prospect.models import ClientProspect
 class Contract(models.Model):
     """Contract class"""
 
-    sales = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     client = models.ForeignKey(to=ClientProspect, on_delete=models.CASCADE)
+    sales = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     status = models.BooleanField(default=False)
     amount = models.FloatField(default=0)
     payment_due = models.DateTimeField(blank=True)
