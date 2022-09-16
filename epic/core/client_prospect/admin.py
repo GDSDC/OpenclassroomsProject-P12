@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from core.client_prospect.models import ClientProspect
+
+admin.site.register(ClientProspect)
