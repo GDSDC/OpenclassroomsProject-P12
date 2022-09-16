@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'core.users',
     'core.client_prospect',
     'core.contracts',
+    'core.events',
 ]
 
 MIDDLEWARE = [
