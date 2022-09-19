@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'core.client_prospect',
     'core.contracts',
     'core.events',
+    'api',
 ]
 
 MIDDLEWARE = [
