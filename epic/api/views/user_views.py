@@ -44,7 +44,6 @@ class SignupView(APIView):
     serializer_class = SignUpSerializer
 
     def post(self, request):
-
         # check if user is admin
         user = request.user
         if user.role != 'ADMIN':
@@ -55,5 +54,3 @@ class SignupView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # TODO : handle     Access Forbidden
