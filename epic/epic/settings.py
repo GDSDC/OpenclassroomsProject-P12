@@ -75,11 +75,13 @@ WSGI_APPLICATION = 'epic.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+_DEFAULT_DATABASE_NAME = 'epic_crm_db'
+_TEST_DATABASE_NAME = 'epic_crm_db_test'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'epic_crm_db',
+        'NAME': _TEST_DATABASE_NAME,
         'USER': 'admin',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
