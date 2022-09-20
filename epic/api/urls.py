@@ -4,8 +4,8 @@ from api.views.user_views import LoginView, LogoutView, SignupView
 
 urlpatterns = [
 
-    path('login/', LoginView.as_view()),
-    path('logout/', LogoutView.as_view()),
-    path('signup/', SignupView.as_view()),
+    path('users/login/', LoginView.as_view()),
+    path('users/logout/', LogoutView.as_view()),
+    path('users/signup/', SignupView.as_view()),
 
 ]
