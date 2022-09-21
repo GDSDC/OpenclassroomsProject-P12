@@ -2,8 +2,8 @@ from django.conf import settings
 from django.db import models
 
 
-class ClientProspect(models.Model):
-    """ClientProspect class"""
+class Contact(models.Model):
+    """Contact class. Contact is a client or prospect"""
 
     sales = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     first_name = models.CharField(max_length=30, blank=True)
