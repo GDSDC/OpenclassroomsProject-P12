@@ -60,7 +60,6 @@ class DeleteUserView(APIView):
     permission_classes = (IsAuthenticated, isAdmin)
 
     def delete(self, request, user_id):
-
         # check if user_to_delete exists
         if not user_exists(user_id=user_id):
             return Response('User not found !', status=status.HTTP_404_NOT_FOUND)
