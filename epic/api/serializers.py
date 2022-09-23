@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
+from core.contacts.models import Contact
 from core.users.models import User
 
 
@@ -46,6 +47,7 @@ class LoginSerializer(serializers.Serializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
+    """Serializer for signup new user"""
     password1 = serializers.CharField(write_only=True, required=True)
     password2 = serializers.CharField(write_only=True, required=True)
 
@@ -78,3 +80,32 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class ContactSerializer(serializers.ModelSerializer):
+    """Serializer for Contact (client or prospect)."""
+
+    class Meta:
+        model = Contact
+        fields = ['sales', 'first_name', 'last_name', 'phone', 'mobile', 'company_name', 'is_client']
+        extra_kwargs = {
+            'first_name': {'required': True},
+            'last_name': {'required': True},
+            'phone': {'required': True},
+            'company_name': {'required': True},
+        }
+
+    def create(self, validated_data):
+        contact = Contact.objects.create(
+            sales=User.objects.get(id=int(validated_data.get('sales')))
+            if validated_data.get('sales', None) is not None else None,
+            first_name=validated_data.get('first_name'),
+            last_name=validated_data.get('last_name'),
+            phone=validated_data.get('phone'),
+            mobile=validated_data.get('mobile', ''),
+            company_name=validated_data.get('company_name'),
+            is_client=validated_data.get('is_client', False),
+        )
+        contact.save()
+
+        return contact
