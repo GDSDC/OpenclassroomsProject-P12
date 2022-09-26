@@ -97,7 +97,7 @@ class ContactSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         contact = Contact.objects.create(
-            sales=User.objects.get(id=int(validated_data.get('sales')))
+            sales=User.objects.get(id=int(validated_data.get('sales').id))
             if validated_data.get('sales', None) is not None else None,
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
@@ -111,7 +111,7 @@ class ContactSerializer(serializers.ModelSerializer):
         return contact
 
     def update(self, instance, validated_data):
-        instance.sales = User.objects.get(id=int(validated_data.get('sales'))) \
+        instance.sales = User.objects.get(id=int(validated_data.get('sales', instance.sales).id)) \
             if validated_data.get('sales', instance.sales) is not None else None
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
