@@ -5,17 +5,20 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import ContactSerializer
-from api.permissions import IsAdmin
 from core.users.models import User
 from core.contacts.models import Contact
 from core.contacts.services import contact_exists
 
 
 class GlobalContactView(APIView):
-    """Global Contact View for creating a contact or get list of clients."""
+    """Global Contact View for creating a contact or get list of contacts."""
 
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
+
+    def get(self, request):
+        contacts = Contact.objects.all()
+        return JsonResponse(self.serializer_class(contacts, many=True).data, status=status.HTTP_200_OK, safe=False)
 
     def post(self, request):
         # check if user is admin or sales
@@ -29,10 +32,6 @@ class GlobalContactView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def get(self, request):
-        contacts = Contact.objects.all()
-        return JsonResponse(self.serializer_class(contacts, many=True).data, status=status.HTTP_200_OK, safe=False)
 
 
 class ContactView(APIView):
