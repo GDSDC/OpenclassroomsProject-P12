@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from core.contacts.models import Contact
+from core.contracts.models import Contract
 from core.users.models import User
 
 
@@ -119,5 +120,38 @@ class ContactSerializer(serializers.ModelSerializer):
         instance.mobile = validated_data.get('mobile', instance.mobile)
         instance.company_name = validated_data.get('company_name', instance.company_name)
         instance.is_client = validated_data.get('is_client', instance.is_client)
+        instance.save()
+        return instance
+
+
+class ContractSerializer(serializers.ModelSerializer):
+    """Serializer for Contract."""
+
+    class Meta:
+        model = Contract
+        fields = ['client', 'sales', 'status', 'amount', 'payment_due']
+        extra_kwargs = {
+            'client': {'required': True}
+        }
+
+    def create(self, validated_data):
+        contract = Contract.objects.create(
+            client=Contact.objects.get(id=self.context.get('contact_id')),
+            sales=User.objects.get(id=int(validated_data.get('sales').id))
+            if validated_data.get('sales', None) is not None else None,
+            status=validated_data.get('status', False),
+            amount=validated_data.get('amount', 0),
+            payment_due=validated_data.get('payment_due', ''),
+        )
+        contract.save()
+
+        return contract
+
+    def update(self, instance, validated_data):
+        instance.sales = User.objects.get(id=int(validated_data.get('sales', instance.sales).id)) \
+            if validated_data.get('sales', instance.sales) is not None else None
+        instance.status = validated_data.get('status', instance.status)
+        instance.amount = validated_data.get('amount', instance.amount)
+        instance.payment_due = validated_data.get('payment_due', instance.payment_due)
         instance.save()
         return instance
