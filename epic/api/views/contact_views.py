@@ -69,3 +69,18 @@ class ContactView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, contact_id):
+        # check if contact exists
+        if not contact_exists(contact_id):
+            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+
+        # check if user is admin
+        user = request.user
+        if not user.role == User.Role.ADMIN:
+            return Response('Access forbidden ! You are not attached to the contact or admin.',
+                            status=status.HTTP_403_FORBIDDEN)
+
+        contact_to_delete = Contact.objects.get(id=contact_id)
+        contact_to_delete.delete()
+        return JsonResponse('Contact deleted successfully !', status=status.HTTP_200_OK, safe=False)
