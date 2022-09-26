@@ -20,9 +20,11 @@ class GlobalContactView(APIView):
     def post(self, request):
         # check if user is admin or sales
         user = request.user
-        if user.role != (User.Role.ADMIN or User.Role.SALES):
-            return Response('Access forbidden ! You should be at least Sales or Admin.',
+        if not (user.role == User.Role.ADMIN or user.role == User.Role.SALES):
+            return Response(f'user.role = {user.role}',
                             status=status.HTTP_403_FORBIDDEN)
+            # return Response('Access forbidden ! You should be at least Sales or Admin.',
+            #                 status=status.HTTP_403_FORBIDDEN)
 
         contact_to_create = request.data
         serializer = self.serializer_class(data=contact_to_create)
@@ -56,9 +58,14 @@ class ContactView(APIView):
         contact_updated_data = request.data
         contact_to_update = Contact.objects.get(id=contact_id)
 
+        # check if user is owner of contact (ie is sales of the contact) or if is admin
+        user = request.user
+        if not (user.role == User.Role.ADMIN or (
+                user.role == User.Role.SALES and contact_to_update.sales_id == user.id)):
+            return Response('Access forbidden ! You are not attached to the contact or admin.',
+                            status=status.HTTP_403_FORBIDDEN)
+
         serializer = self.serializer_class(contact_to_update, data=contact_updated_data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
-
-
