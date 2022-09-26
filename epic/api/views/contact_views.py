@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import ContactSerializer
-from api.permissions import IsAdmin
+from api.permissions import IsAdmin, is_role_decorator
 from core.users.models import User
 from core.contacts.models import Contact
 
@@ -17,8 +17,13 @@ class GlobalContactView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
 
-    # TODO : create decorator to limit access to admin and sales
     def post(self, request):
+        # check if user is admin or sales
+        user = request.user
+        if user.role != (User.Role.ADMIN or User.Role.SALES):
+            return Response('Access forbidden ! You should be at least Sales or Admin.',
+                            status=status.HTTP_403_FORBIDDEN)
+
         contact_to_create = request.data
         serializer = self.serializer_class(data=contact_to_create)
         serializer.is_valid(raise_exception=True)
