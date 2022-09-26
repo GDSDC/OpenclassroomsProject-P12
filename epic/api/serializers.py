@@ -109,3 +109,15 @@ class ContactSerializer(serializers.ModelSerializer):
         contact.save()
 
         return contact
+
+    def update(self, instance, validated_data):
+        instance.sales = User.objects.get(id=int(validated_data.get('sales'))) \
+            if validated_data.get('sales', instance.sales) is not None else None
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.mobile = validated_data.get('mobile', instance.mobile)
+        instance.company_name = validated_data.get('company_name', instance.company_name)
+        instance.is_client = validated_data.get('is_client', instance.is_client)
+        instance.save()
+        return instance
