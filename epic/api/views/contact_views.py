@@ -56,7 +56,7 @@ class ContactView(APIView):
         contact_updated_data = request.data
         contact_to_update = Contact.objects.get(id=contact_id)
 
-        serializer = self.serializer_class(contact_to_update, data=contact_updated_data)
+        serializer = self.serializer_class(contact_to_update, data=contact_updated_data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
