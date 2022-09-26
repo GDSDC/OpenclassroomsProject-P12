@@ -23,8 +23,6 @@ class GlobalContactView(APIView):
         if not (user.role == User.Role.ADMIN or user.role == User.Role.SALES):
             return Response(f'user.role = {user.role}',
                             status=status.HTTP_403_FORBIDDEN)
-            # return Response('Access forbidden ! You should be at least Sales or Admin.',
-            #                 status=status.HTTP_403_FORBIDDEN)
 
         contact_to_create = request.data
         serializer = self.serializer_class(data=contact_to_create)
