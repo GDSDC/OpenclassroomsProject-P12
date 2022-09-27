@@ -95,3 +95,29 @@ class ContractView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, contact_id, contract_id):
+        # check if contact exists
+        if not contact_exists(contact_id):
+            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+
+        # check if contract exists
+        if not contract_exists(contract_id):
+            return Response('Contract not found. Wrong contract_id.', status=status.HTTP_404_NOT_FOUND)
+
+        contract_to_delete = Contract.objects.get(id=contract_id)
+        contact = Contact.objects.get(id=contact_id)
+
+        # check if contract belongs to contact
+        if not contract_to_delete.client_id == contact_id:
+            return Response(f"Contract '{contract_id}' does not belong to Client '{contact_id}' !",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # check if user is admin
+        user = request.user
+        if not user.role == User.Role.ADMIN:
+            return Response('Access forbidden ! You are not admin.',
+                            status=status.HTTP_403_FORBIDDEN)
+
+        contract_to_delete.delete()
+        return JsonResponse('Contract deleted successfully !', status=status.HTTP_200_OK, safe=False)
