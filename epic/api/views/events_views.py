@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import EventSerializer
+from api.decorators import user_has_role
 from core.users.models import User
 from core.contacts.models import Contact
 from core.contacts.services import contact_exists
@@ -26,6 +27,7 @@ class GlobalEventView(APIView):
         events = Event.objects.all()
         return JsonResponse(self.serializer_class(events, many=True).data, status=status.HTTP_200_OK, safe=False)
 
+    @user_has_role({User.Role.ADMIN, User.Role.SALES})
     def post(self, request, contact_id):
         # check if contact exists
         if not contact_exists(contact_id):
@@ -36,8 +38,7 @@ class GlobalEventView(APIView):
 
         # check if user is owner of contact (ie is sales of the contact) or if is admin
         user = request.user
-        if not (user.role == User.Role.ADMIN or (
-                user.role == User.Role.SALES and contact.sales_id == user.id)):
+        if user.role == User.Role.SALES and not contact.sales_id == user.id:
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 

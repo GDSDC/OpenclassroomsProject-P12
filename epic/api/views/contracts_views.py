@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+from api.decorators import user_has_role
 from api.serializers import ContractSerializer
 from core.users.models import User
 from core.contacts.models import Contact
@@ -22,6 +23,7 @@ class GlobalContractView(APIView):
         contracts = Contract.objects.all()
         return JsonResponse(self.serializer_class(contracts, many=True).data, status=status.HTTP_200_OK, safe=False)
 
+    @user_has_role({User.Role.ADMIN, User.Role.SALES})
     def post(self, request, contact_id):
         # check if contact exists
         if not contact_exists(contact_id):
@@ -30,10 +32,9 @@ class GlobalContractView(APIView):
         contract_to_create = request.data
         contact = Contact.objects.get(id=contact_id)
 
-        # check if user is owner of contact (ie is sales of the contact) or if is admin
+        # check if user is owner of contact (ie is sales of the contact)
         user = request.user
-        if not (user.role == User.Role.ADMIN or (
-                user.role == User.Role.SALES and contact.sales_id == user.id)):
+        if user.role == User.Role.SALES and not contact.sales_id == user.id:
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
@@ -67,6 +68,7 @@ class ContractView(APIView):
 
         return JsonResponse(self.serializer_class(contract).data, status=status.HTTP_200_OK, safe=False)
 
+    @user_has_role({User.Role.ADMIN, User.Role.SALES})
     def put(self, request, contact_id, contract_id):
         # check if contact exists
         if not contact_exists(contact_id):
@@ -85,10 +87,9 @@ class ContractView(APIView):
             return Response(f"Contract '{contract_id}' does not belong to Client '{contact_id}' !",
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # check if user is owner of contact (ie is sales of the contact) or if is admin
+        # check if user is owner of contact (ie is sales of the contact)
         user = request.user
-        if not (user.role == User.Role.ADMIN or (
-                user.role == User.Role.SALES and contact.sales_id == user.id)):
+        if user.role == User.Role.SALES and not contact.sales_id == user.id:
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
@@ -97,6 +98,7 @@ class ContractView(APIView):
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
+    @user_has_role({User.Role.ADMIN})
     def delete(self, request, contact_id, contract_id):
         # check if contact exists
         if not contact_exists(contact_id):
@@ -113,12 +115,6 @@ class ContractView(APIView):
         if not contract_to_delete.client_id == contact_id:
             return Response(f"Contract '{contract_id}' does not belong to Client '{contact_id}' !",
                             status=status.HTTP_400_BAD_REQUEST)
-
-        # check if user is admin
-        user = request.user
-        if not user.role == User.Role.ADMIN:
-            return Response('Access forbidden ! You are not admin.',
-                            status=status.HTTP_403_FORBIDDEN)
 
         contract_to_delete.delete()
         return JsonResponse('Contract deleted successfully !', status=status.HTTP_200_OK, safe=False)

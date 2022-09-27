@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import LoginSerializer, SignUpSerializer
-from api.permissions import IsAdmin
+from api.decorators import user_has_role
 from core.users.models import User
 from core.users.services import user_exists
 
@@ -42,9 +42,10 @@ class SignupView(APIView):
     """Signup View"""
 
     # This view should be accessible only for Authenticated Admin users.
-    permission_classes = (IsAuthenticated, IsAdmin)
+    permission_classes = (IsAuthenticated,)
     serializer_class = SignUpSerializer
 
+    @user_has_role({User.Role.ADMIN})
     def post(self, request):
         user_to_create = request.data
         serializer = self.serializer_class(data=user_to_create)
@@ -57,8 +58,9 @@ class DeleteUserView(APIView):
     """Delete User View"""
 
     # This view should be accessible only for IsAuthenticated users and Admin users (user.role = 'ADMIN').
-    permission_classes = (IsAuthenticated, IsAdmin)
+    permission_classes = (IsAuthenticated,)
 
+    @user_has_role({User.Role.ADMIN})
     def delete(self, request, user_id):
         # check if user_to_delete exists
         if not user_exists(user_id=user_id):
