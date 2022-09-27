@@ -57,10 +57,41 @@ class ContractView(APIView):
         if not contract_exists(contract_id):
             return Response('Contract not found. Wrong contract_id.', status=status.HTTP_404_NOT_FOUND)
 
+        contract = Contract.objects.get(id=contract_id)
+
         # check if contract belongs to contact
-        if not Contract.objects.get(id=contract_id).client.id == contact_id:
+        if not contract.client.id == contact_id:
             return Response(f"Contract '{contract_id}' does not belong to Client '{contact_id}' !",
                             status=status.HTTP_400_BAD_REQUEST)
 
-        contract = Contract.objects.get(id=contract_id)
         return JsonResponse(self.serializer_class(contract).data, status=status.HTTP_200_OK, safe=False)
+
+    def put(self, request, contact_id, contract_id):
+        # check if contact exists
+        if not contact_exists(contact_id):
+            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+
+        # check if contract exists
+        if not contract_exists(contract_id):
+            return Response('Contract not found. Wrong contract_id.', status=status.HTTP_404_NOT_FOUND)
+
+        contract_updated_data = request.data
+        contract_to_update = Contract.objects.get(id=contract_id)
+        contact = Contact.objects.get(id=contact_id)
+
+        # check if contract belongs to contact
+        if not contract_to_update.client_id == contact_id:
+            return Response(f"Contract '{contract_id}' does not belong to Client '{contact_id}' !",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        # check if user is owner of contact (ie is sales of the contact) or if is admin
+        user = request.user
+        if not (user.role == User.Role.ADMIN or (
+                user.role == User.Role.SALES and contact.sales_id == user.id)):
+            return Response('Access forbidden ! You are not attached to the contact or admin.',
+                            status=status.HTTP_403_FORBIDDEN)
+
+        serializer = self.serializer_class(contract_to_update, data=contract_updated_data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return JsonResponse(serializer.data, status=status.HTTP_200_OK)
