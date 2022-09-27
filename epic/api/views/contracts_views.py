@@ -28,18 +28,19 @@ class GlobalContractView(APIView):
             return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
 
         contract_to_create = request.data
+        contact = Contact.objects.get(id=contact_id)
 
         # check if user is owner of contact (ie is sales of the contact) or if is admin
         user = request.user
         if not (user.role == User.Role.ADMIN or (
-                user.role == User.Role.SALES and Contact.objects.get(id=contact_id).sales_id == user.id)):
+                user.role == User.Role.SALES and contact.sales_id == user.id)):
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
         serializer = self.serializer_class(data=contract_to_create, context={'contact_id': contact_id}, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED, safe=False)
 
 
 class ContractView(APIView):
