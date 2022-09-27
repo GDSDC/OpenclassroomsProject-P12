@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from core.contacts.models import Contact
 from core.contracts.models import Contract
+from core.events.models import Event
 from core.users.models import User
 
 
@@ -64,7 +65,6 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if attrs['password1'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
-
         return attrs
 
     def create(self, validated_data):
@@ -79,7 +79,6 @@ class SignUpSerializer(serializers.ModelSerializer):
 
         user.set_password(validated_data['password1'])
         user.save()
-
         return user
 
 
@@ -108,7 +107,6 @@ class ContactSerializer(serializers.ModelSerializer):
             is_client=validated_data.get('is_client', False),
         )
         contact.save()
-
         return contact
 
     def update(self, instance, validated_data):
@@ -144,7 +142,6 @@ class ContractSerializer(serializers.ModelSerializer):
             payment_due=validated_data.get('payment_due', ''),
         )
         contract.save()
-
         return contract
 
     def update(self, instance, validated_data):
@@ -153,5 +150,39 @@ class ContractSerializer(serializers.ModelSerializer):
         instance.status = validated_data.get('status', instance.status)
         instance.amount = validated_data.get('amount', instance.amount)
         instance.payment_due = validated_data.get('payment_due', instance.payment_due)
+        instance.save()
+        return instance
+
+
+class EventSerializer(serializers.ModelSerializer):
+    """Serializer for Event"""
+
+    class Meta:
+        model = Event
+        fields = ['client', 'support', 'status', 'attendees', 'event_date', 'notes']
+        extra_kwargs = {
+            'client': {'required': True}
+        }
+
+    def create(self, validated_data):
+        event = Event.objects.create(
+            client=Contact.objects.get(id=self.context.get('contact_id')),
+            support=User.objects.get(id=int(validated_data.get('support').id))
+            if validated_data.get('support', None) is not None else None,
+            status=validated_data.get('status', False),
+            attendees=validated_data.get('attendees', ''),
+            event_date=validated_data.get('event_date', ''),
+            notes=validated_data.get('notes', ''),
+        )
+        event.save()
+        return event
+
+    def update(self, instance, validated_data):
+        instance.support = User.objects.get(id=int(validated_data.get('support', instance.support).id)) \
+            if validated_data.get('support', instance.support) is not None else None
+        instance.status = validated_data.get('status', instance.status)
+        instance.attendees = validated_data.get('attendees', instance.attendees)
+        instance.event_date = validated_data.get('event_date', instance.event_date)
+        instance.notes = alidated_data.get('notes', instance.notes)
         instance.save()
         return instance

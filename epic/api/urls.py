@@ -1,7 +1,8 @@
 from django.urls import path
 
-from api.views.contact_views import GlobalContactView, ContactView
+from api.views.contacts_views import GlobalContactView, ContactView
 from api.views.contracts_views import GlobalContractView, ContractView
+from api.views.events_views import GlobalEventView
 from api.views.user_views import LoginView, LogoutView, SignupView, DeleteUserView
 
 urlpatterns = [
@@ -20,5 +21,9 @@ urlpatterns = [
     path('contacts/contracts/', GlobalContractView.as_view()),
     path('contacts/<int:contact_id>/contracts/', GlobalContractView.as_view()),
     path('contacts/<int:contact_id>/contracts/<int:contract_id>/', ContractView.as_view()),
+
+    # 4. events
+    path('contacts/events/', GlobalEventView.as_view()),
+    path('contacts/<int:contact_id>/events/', GlobalEventView.as_view()),
 
 ]
