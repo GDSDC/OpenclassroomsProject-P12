@@ -12,6 +12,7 @@ from core.contacts.services import contact_exists
 from core.contracts.models import Contract
 from core.contracts.services import contract_exists
 from core.events.models import Event
+from core.events.services import event_exists
 
 
 # from core.events.services import event_exists
@@ -46,3 +47,28 @@ class GlobalEventView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED, safe=False)
+
+
+class EventView(APIView):
+    """Event view to interact with a single event"""
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = EventSerializer
+
+    def get(self, request, contact_id, event_id):
+        # check if contact exists
+        if not contact_exists(contact_id):
+            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+
+        # check if event exists
+        if not event_exists(event_id):
+            return Response('Event not found. Wrong event_id.', status=status.HTTP_404_NOT_FOUND)
+
+        event = Event.objects.get(id=event_id)
+
+        # check if event belongs to contact
+        if not event.client.id == contact_id:
+            return Response(f"Event '{event_id}' does not belong to Client '{contact_id}' !",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse(self.serializer_class(event).data, status=status.HTTP_200_OK, safe=False)
