@@ -9,12 +9,10 @@ from core.users.models import User
 from core.contacts.models import Contact
 from core.contacts.services import contact_exists
 from core.contracts.models import Contract
+from core.contracts.services import contract_exists
 
 
-# from core.contracts.services import contract_exists
-
-
-class GlobalContractsView(APIView):
+class GlobalContractView(APIView):
     """Global Contract View for creating a contract or get list of contracts."""
 
     permission_classes = (IsAuthenticated,)
@@ -42,3 +40,27 @@ class GlobalContractsView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ContractView(APIView):
+    """Contract View to interact with a single contract"""
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ContractSerializer
+
+    def get(self, request, contact_id, contract_id):
+        # check if contact exists
+        if not contact_exists(contact_id):
+            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+
+        # check if contract exists
+        if not contract_exists(contract_id):
+            return Response('Contract not found. Wrong contract_id.', status=status.HTTP_404_NOT_FOUND)
+
+        # check if contract belongs to contact
+        if not Contract.objects.get(id=contract_id).client.id == contact_id:
+            return Response(f"Contract '{contract_id}' does not belong to Client '{contact_id}' !",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        contract = Contract.objects.get(id=contract_id)
+        return JsonResponse(self.serializer_class(contract).data, status=status.HTTP_200_OK, safe=False)
