@@ -80,7 +80,6 @@ class ContractView(APIView):
 
         contract_updated_data = request.data
         contract_to_update = Contract.objects.get(id=contract_id)
-        contact = Contact.objects.get(id=contact_id)
 
         # check if contract belongs to contact
         if not contract_to_update.client_id == contact_id:
@@ -89,6 +88,7 @@ class ContractView(APIView):
 
         # check if user is owner of contact (ie is sales of the contact)
         user = request.user
+        contact = Contact.objects.get(id=contact_id)
         if user.role == User.Role.SALES and not contact.sales_id == user.id:
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
