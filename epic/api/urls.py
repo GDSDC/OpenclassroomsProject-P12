@@ -3,7 +3,7 @@ from django.urls import path
 from api.views.contacts_views import GlobalContactView, ContactView
 from api.views.contracts_views import GlobalContractView, ContractView
 from api.views.events_views import GlobalEventView
-from api.views.user_views import LoginView, LogoutView, SignupView, DeleteUserView
+from api.views.users_views import LoginView, LogoutView, SignupView, DeleteUserView
 
 urlpatterns = [
 
