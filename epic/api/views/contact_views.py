@@ -75,7 +75,7 @@ class ContactView(APIView):
         # check if user is admin
         user = request.user
         if not user.role == User.Role.ADMIN:
-            return Response('Access forbidden ! You are not attached to the contact or admin.',
+            return Response('Access forbidden ! You are not admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
         contact_to_delete = Contact.objects.get(id=contact_id)
