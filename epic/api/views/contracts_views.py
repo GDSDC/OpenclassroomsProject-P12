@@ -109,7 +109,6 @@ class ContractView(APIView):
             return Response('Contract not found. Wrong contract_id.', status=status.HTTP_404_NOT_FOUND)
 
         contract_to_delete = Contract.objects.get(id=contract_id)
-        contact = Contact.objects.get(id=contact_id)
 
         # check if contract belongs to contact
         if not contract_to_delete.client_id == contact_id:
@@ -117,4 +116,4 @@ class ContractView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         contract_to_delete.delete()
-        return JsonResponse('Contract deleted successfully !', status=status.HTTP_200_OK, safe=False)
+        return Response('Contract deleted successfully !', status=status.HTTP_200_OK)

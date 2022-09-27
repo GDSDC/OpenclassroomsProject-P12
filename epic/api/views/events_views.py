@@ -107,3 +107,23 @@ class EventView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+    @user_has_role({User.Role.ADMIN})
+    def delete(self, request, contact_id, event_id):
+        # check if contact exists
+        if not contact_exists(contact_id):
+            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+
+        # check if event exists
+        if not event_exists(event_id):
+            return Response('Event not found. Wrong event_id.', status=status.HTTP_404_NOT_FOUND)
+
+        event_to_delete = Event.objects.get(id=event_id)
+
+        # check if event belongs to contact
+        if not event_to_delete.client.id == contact_id:
+            return Response(f"Event '{event_id}' does not belong to Client '{contact_id}' !",
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        event_to_delete.delete()
+        return Response('Event deleted successfully !', status=status.HTTP_200_OK)
