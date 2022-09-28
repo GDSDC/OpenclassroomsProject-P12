@@ -1,3 +1,5 @@
+from typing import Any, Dict, Optional
+
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -5,8 +7,9 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import ContactSerializer
-from api.decorators import user_has_role
+from api.decorators import user_has_role, contact_query_parameter_decorator
 from core.users.models import User
+from core.users.services import user_exists
 from core.contacts.models import Contact
 from core.contacts.services import contact_exists
 
@@ -17,8 +20,22 @@ class GlobalContactView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
 
-    def get(self, request):
+    @contact_query_parameter_decorator()
+    def get(self, request, query_params: Optional[Dict[str, Any]] = None):
+
         contacts = Contact.objects.all()
+
+        # Filtering
+        if query_params is not None:
+            if 'sales_id' in query_params.keys():
+                contacts = contacts.filter(sales_id=query_params['sales_id'])
+            if 'company_name' in query_params.keys():
+                # case-insensitive filtering
+                contacts = contacts.filter(company_name__istartswith=query_params['company_name'])
+                contacts = contacts.filter(company_name__iendswith=query_params['company_name'])
+            if 'is_client' in query_params.keys():
+                contacts = contacts.filter(is_client=query_params['is_client'])
+
         return JsonResponse(self.serializer_class(contacts, many=True).data, status=status.HTTP_200_OK, safe=False)
 
     @user_has_role({User.Role.ADMIN, User.Role.SALES})
