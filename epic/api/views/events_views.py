@@ -15,9 +15,6 @@ from core.events.models import Event
 from core.events.services import event_exists
 
 
-# from core.events.services import event_exists
-
-
 class GlobalEventView(APIView):
     """Global Event View for creating an event or get list of events."""
 
