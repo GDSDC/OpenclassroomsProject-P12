@@ -23,7 +23,10 @@ class GlobalEventView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
 
-    @query_parameter_decorator({'client_id', 'support_id', 'status', 'event_date_lower','event_date_upper'})
+    @query_parameter_decorator(
+        {'client_id', 'support_id', 'status',
+         'attendees_lower', 'attendees_upper',
+         'event_date_lower', 'event_date_upper'})
     def get(self, request, query_params: Dict[str, Any] = {}):
         events = Event.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(events, many=True).data, status=status.HTTP_200_OK, safe=False)

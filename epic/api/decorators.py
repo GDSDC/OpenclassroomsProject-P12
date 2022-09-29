@@ -155,7 +155,31 @@ def query_parameter_decorator(validated_query_params: Set[str]):
                         "'payment_due_upper' must be an isoformat string (ex : '2022-09-21').",
                         status=status.HTTP_400_BAD_REQUEST)
 
-            # AMOUNT_LOWER // check for 'payment_due_lower' proper query parameter
+            # ATTENDEES_LOWER // check for 'attendees_lower' proper query parameter
+            attendees_lower_qp = query_params.get('attendees_lower', None)
+            if attendees_lower_qp is not None:
+                # check for 'attendees_lower' proper type -> int
+                try:
+                    attendees_lower_qp = int(attendees_lower_qp)
+                    query_params_arg['attendees__gte'] = attendees_lower_qp
+                except ValueError:
+                    return Response(
+                        "'attendees_lower' query parameter wrong format! 'attendees_lower' must be an integer.",
+                        status=status.HTTP_400_BAD_REQUEST)
+
+            # ATTENDEES_UPPER // check for 'attendees_upper' proper query parameter
+            attendees_upper_qp = query_params.get('attendees_upper', None)
+            if attendees_upper_qp is not None:
+                # check for 'attendees_upper' proper type -> int
+                try:
+                    attendees_upper_qp = int(attendees_upper_qp)
+                    query_params_arg['attendees__lte'] = attendees_upper_qp
+                except ValueError:
+                    return Response(
+                        "'attendees_lower' query parameter wrong format! 'attendees_lower' must be an integer.",
+                        status=status.HTTP_400_BAD_REQUEST)
+
+            # AMOUNT_LOWER // check for 'amount_due_lower' proper query parameter
             amount_lower_qp = query_params.get('amount_lower', None)
             if amount_lower_qp is not None:
                 # check for 'amount_lower' proper type -> int
