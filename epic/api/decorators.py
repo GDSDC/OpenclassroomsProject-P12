@@ -4,6 +4,7 @@ from typing import Set
 from rest_framework import status
 from rest_framework.response import Response
 
+from core.contacts.services import contact_exists
 from core.users.models import User
 from core.users.services import user_exists
 
@@ -27,7 +28,7 @@ def user_has_role(roles_in: Set[User.Role]):
 
 # -------- Query Parameters Decorators --------
 
-def contact_query_parameter_decorator():
+def query_parameter_decorator(validated_query_params: Set[str]):
     def _inner(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -36,7 +37,6 @@ def contact_query_parameter_decorator():
             query_params = request.query_params
             query_params_arg = {}
             # check for validated query parameters
-            validated_query_params = ['sales_id', 'company_name', 'is_client']
             for qp in query_params:
                 # checking valid keys
                 if qp not in validated_query_params:
@@ -45,7 +45,22 @@ def contact_query_parameter_decorator():
                         f"{' and/or '.join([qp for qp in validated_query_params])}.",
                         status=status.HTTP_400_BAD_REQUEST)
 
-            # check for sales proper query parameter
+            # CLIENT_ID /// check for client proper query parameter
+            client_id_qp = query_params.get('client_id', None)
+            if client_id_qp is not None:
+                # check for 'client' query parameter proper type -> int
+                try:
+                    client_id_qp = int(client_id_qp)
+                    # check if client exists
+                    if not contact_exists(client_id_qp):
+                        return Response('Client not found !', status=status.HTTP_404_NOT_FOUND)
+                    query_params_arg['client_id'] = client_id_qp
+                except:
+                    return Response(
+                        "'client_id' query parameter wrong value. 'client_id' must be an integer !",
+                        status=status.HTTP_400_BAD_REQUEST)
+
+            # SALES_ID /// check for sales proper query parameter
             sales_id_qp = query_params.get('sales_id', None)
             if sales_id_qp is not None:
                 # check for 'sales' query parameter proper type -> int or null
@@ -59,16 +74,16 @@ def contact_query_parameter_decorator():
                     if sales_id_qp == 'null':
                         query_params_arg['sales_id'] = None
                     else:
-                        return Response("'sales' query parameter wrong value. 'is_client' must be an integer !",
-                                        status=status.HTTP_400_BAD_REQUEST)
+                        return Response(
+                            "'sales_id' query parameter wrong value. 'sales_id' must be an integer or null!",
+                            status=status.HTTP_400_BAD_REQUEST)
 
-            # check for contact proper company_name query parameter
+            # COMPANY_NAME /// check for contact proper company_name query parameter
             company_name_qp = query_params.get('company_name', None)
             if company_name_qp is not None:
-                query_params_arg['company_name'] = company_name_qp
+                query_params_arg['company_name__istartswith'] = company_name_qp
 
-
-            # check for client proper query parameter
+            # IS_CLIENT /// check for client proper query parameter
             is_client_qp = query_params.get('is_client', None)
             if is_client_qp is not None:
                 # check for 'is_client' query parameter proper type -> bool

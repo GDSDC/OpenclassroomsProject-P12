@@ -1,3 +1,5 @@
+from typing import Any, Dict, Optional
+
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -5,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import EventSerializer
-from api.decorators import user_has_role
+from api.decorators import user_has_role, query_parameter_decorator
 from core.users.models import User
 from core.contacts.models import Contact
 from core.contacts.services import contact_exists
@@ -21,8 +23,9 @@ class GlobalEventView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
 
-    def get(self, request):
-        events = Event.objects.all()
+    @query_parameter_decorator({'client_id', 'support_id', 'status', 'event_date'})
+    def get(self, request, query_params: Optional[Dict[str, Any]] = {}):
+        events = Event.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(events, many=True).data, status=status.HTTP_200_OK, safe=False)
 
     @user_has_role({User.Role.ADMIN, User.Role.SALES})
