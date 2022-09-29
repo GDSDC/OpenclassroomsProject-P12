@@ -22,7 +22,9 @@ class GlobalContractView(APIView):
     serializer_class = ContractSerializer
 
     @query_parameter_decorator(
-        {'client_id', 'sales_id', 'status', 'amount_lower', 'amount_upper', 'payment_due_lower', 'payment_due_upper'})
+        {'client_id', 'sales_id', 'status',
+         'amount_lower', 'amount_upper',
+         'payment_due_lower', 'payment_due_upper'})
     def get(self, request, query_params: Dict[str, Any] = {}):
         contracts = Contract.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(contracts, many=True).data, status=status.HTTP_200_OK, safe=False)
