@@ -55,7 +55,7 @@ def query_parameter_decorator(validated_query_params: Set[str]):
                     if not contact_exists(client_id_qp):
                         return Response('Client not found !', status=status.HTTP_404_NOT_FOUND)
                     query_params_arg['client_id'] = client_id_qp
-                except:
+                except ValueError:
                     return Response(
                         "'client_id' query parameter wrong value. 'client_id' must be an integer !",
                         status=status.HTTP_400_BAD_REQUEST)
@@ -70,7 +70,7 @@ def query_parameter_decorator(validated_query_params: Set[str]):
                     if not user_exists(sales_id_qp):
                         return Response('Sales not found !', status=status.HTTP_404_NOT_FOUND)
                     query_params_arg['sales_id'] = sales_id_qp
-                except:
+                except ValueError:
                     if sales_id_qp == 'null':
                         query_params_arg['sales_id'] = None
                     else:
