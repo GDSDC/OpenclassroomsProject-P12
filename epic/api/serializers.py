@@ -139,7 +139,7 @@ class ContractSerializer(serializers.ModelSerializer):
             if validated_data.get('sales', None) is not None else None,
             status=validated_data.get('status', False),
             amount=validated_data.get('amount', 0),
-            payment_due=validated_data.get('payment_due', ''),
+            payment_due=validated_data.get('payment_due', None),
         )
         contract.save()
         return contract
@@ -161,7 +161,8 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ['client', 'support', 'status', 'attendees', 'event_date', 'notes']
         extra_kwargs = {
-            'client': {'required': True}
+            'client': {'required': True},
+            'event_date': {'required': True}
         }
 
     def create(self, validated_data):
@@ -171,7 +172,7 @@ class EventSerializer(serializers.ModelSerializer):
             if validated_data.get('support', None) is not None else None,
             status=validated_data.get('status', False),
             attendees=validated_data.get('attendees', ''),
-            event_date=validated_data.get('event_date', ''),
+            event_date=validated_data.get('event_date'),
             notes=validated_data.get('notes', ''),
         )
         event.save()

@@ -11,6 +11,6 @@ class Contract(models.Model):
     sales = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     status = models.BooleanField(default=False)
     amount = models.FloatField(default=0)
-    payment_due = models.DateTimeField(blank=True)
+    payment_due = models.DateTimeField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
