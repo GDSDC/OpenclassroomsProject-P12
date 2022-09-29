@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
@@ -24,7 +24,7 @@ class GlobalEventView(APIView):
     serializer_class = EventSerializer
 
     @query_parameter_decorator({'client_id', 'support_id', 'status', 'event_date'})
-    def get(self, request, query_params: Optional[Dict[str, Any]] = {}):
+    def get(self, request, query_params: Dict[str, Any] = {}):
         events = Event.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(events, many=True).data, status=status.HTTP_200_OK, safe=False)
 

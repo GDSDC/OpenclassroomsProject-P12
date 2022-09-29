@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
@@ -21,7 +21,7 @@ class GlobalContactView(APIView):
     serializer_class = ContactSerializer
 
     @query_parameter_decorator({'sales_id', 'company_name', 'is_client'})
-    def get(self, request, query_params: Optional[Dict[str, Any]] = {}):
+    def get(self, request, query_params: Dict[str, Any] = {}):
         contacts = Contact.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(contacts, many=True).data, status=status.HTTP_200_OK, safe=False)
 
