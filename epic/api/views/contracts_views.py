@@ -1,10 +1,12 @@
+from typing import Any, Dict
+
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from api.decorators import user_has_role
+from api.decorators import user_has_role, query_parameter_decorator
 from api.serializers import ContractSerializer
 from core.users.models import User
 from core.contacts.models import Contact
@@ -19,8 +21,10 @@ class GlobalContractView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContractSerializer
 
-    def get(self, request):
-        contracts = Contract.objects.all()
+    @query_parameter_decorator(
+        {'client_id', 'sales_id', 'status', 'amount_lower', 'amount_upper', 'payment_due_lower', 'payment_due_upper'})
+    def get(self, request, query_params: Dict[str, Any] = {}):
+        contracts = Contract.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(contracts, many=True).data, status=status.HTTP_200_OK, safe=False)
 
     @user_has_role({User.Role.ADMIN, User.Role.SALES})
