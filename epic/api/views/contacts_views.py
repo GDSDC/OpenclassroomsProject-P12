@@ -69,9 +69,9 @@ class ContactView(APIView):
         user = request.user
         if user.role == User.Role.SALES and not contact_to_update.sales_id == user.id:
             logger.warning(
-                f'Access forbidden ! User "{user.email}" is not attached to contact "{contact_id}" '
-                f'({contact_to_update.first_name} {contact_to_update.last_name} '
-                f'from {contact_to_update.company_name} company) or admin.')
+                f"Access forbidden ! User '{user.email}' is not attached to contact '{contact_id}' "
+                f"({contact_to_update.first_name} {contact_to_update.last_name} "
+                f"from {contact_to_update.company_name} company) or admin.")
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
