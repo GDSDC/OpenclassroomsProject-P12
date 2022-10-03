@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import EventSerializer
-from api.decorators import user_has_role, query_parameter_decorator
+from api.decorators import user_has_role, query_parameter_parser
 from core.users.models import User
 from core.contacts.models import Contact
 from core.contacts.services import contact_exists
@@ -23,7 +23,7 @@ class GlobalEventView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
 
-    @query_parameter_decorator(
+    @query_parameter_parser(
         {'client_id', 'support_id', 'status',
          'attendees_lower', 'attendees_upper',
          'event_date_lower', 'event_date_upper'})

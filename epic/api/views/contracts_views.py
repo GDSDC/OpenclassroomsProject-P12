@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from api.decorators import user_has_role, query_parameter_decorator
+from api.decorators import user_has_role, query_parameter_parser
 from api.serializers import ContractSerializer
 from core.users.models import User
 from core.contacts.models import Contact
@@ -21,7 +21,7 @@ class GlobalContractView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContractSerializer
 
-    @query_parameter_decorator(
+    @query_parameter_parser(
         {'client_id', 'sales_id', 'status',
          'amount_lower', 'amount_upper',
          'payment_due_lower', 'payment_due_upper'})
