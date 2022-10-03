@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Dict
 
 from django.http import JsonResponse
@@ -7,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import ContactSerializer
-from api.decorators import user_has_role, query_parameter_decorator
+from api.decorators import user_has_role, query_parameter_parser, logging_and_response
 from core.users.models import User
 from core.users.services import user_exists
 from core.contacts.models import Contact
@@ -20,7 +21,7 @@ class GlobalContactView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
 
-    @query_parameter_decorator({'sales_id', 'company_name', 'is_client'})
+    @query_parameter_parser({'sales_id', 'company_name', 'is_client'})
     def get(self, request, query_params: Dict[str, Any] = {}):
         contacts = Contact.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(contacts, many=True).data, status=status.HTTP_200_OK, safe=False)
@@ -42,16 +43,24 @@ class ContactView(APIView):
     def get(self, request, contact_id):
         # check if contact exists
         if not contact_exists(contact_id):
-            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+            return logging_and_response(
+                logger=logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__])),
+                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                error_status=status.HTTP_404_NOT_FOUND)
 
         contact = Contact.objects.get(id=contact_id)
         return JsonResponse(self.serializer_class(contact).data, status=status.HTTP_200_OK, safe=False)
 
     @user_has_role({User.Role.ADMIN, User.Role.SALES})
     def put(self, request, contact_id):
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.put.__name__])),
+
         # check if contact exists
         if not contact_exists(contact_id):
-            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+            return logging_and_response(
+                logger=logger,
+                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                error_status=status.HTTP_404_NOT_FOUND)
 
         contact_updated_data = request.data
         contact_to_update = Contact.objects.get(id=contact_id)
@@ -59,6 +68,10 @@ class ContactView(APIView):
         # check if user is owner of contact (ie is sales of the contact)
         user = request.user
         if user.role == User.Role.SALES and not contact_to_update.sales_id == user.id:
+            logger.warning(
+                f'Access forbidden ! User "{user.email}" is not attached to contact "{contact_id}" '
+                f'({contact_to_update.first_name} {contact_to_update.last_name} '
+                f'from {contact_to_update.company_name} company) or admin.')
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
@@ -71,7 +84,10 @@ class ContactView(APIView):
     def delete(self, request, contact_id):
         # check if contact exists
         if not contact_exists(contact_id):
-            return Response('Contact not found. Wrong contact_id.', status=status.HTTP_404_NOT_FOUND)
+            return logging_and_response(
+                logger=logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__])),
+                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                error_status=status.HTTP_404_NOT_FOUND)
 
         contact_to_delete = Contact.objects.get(id=contact_id)
         contact_to_delete.delete()
