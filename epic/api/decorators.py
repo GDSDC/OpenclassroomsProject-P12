@@ -20,6 +20,7 @@ def user_has_role(roles_in: Set[User.Role]):
             request = args[1]
             user = request.user
             if user.role not in roles_in:
+                logger = logging.getLogger('.'.join([__name__, user_has_role.__name__]))
                 logger.warning(f'Access forbidden ! User {user.email} is not allowed. '
                                f'User need to be {" or ".join([role for role in roles_in])}.')
                 return Response(data='Access forbidden ! You are not allowed to do this. ',

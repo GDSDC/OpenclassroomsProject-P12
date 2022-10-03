@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import login, logout
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
@@ -5,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import LoginSerializer, SignUpSerializer
-from api.decorators import user_has_role
+from api.decorators import user_has_role, logging_and_response
 from core.users.models import User
 from core.users.services import user_exists
 
@@ -64,7 +66,10 @@ class DeleteUserView(APIView):
     def delete(self, request, user_id):
         # check if user_to_delete exists
         if not user_exists(user_id=user_id):
-            return Response('User not found !', status=status.HTTP_404_NOT_FOUND)
+            return logging_and_response(
+                logger=logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__])),
+                error_message=f"User '{user_id}' not found. Wrong contact_id.",
+                error_status=status.HTTP_404_NOT_FOUND)
 
         user_to_delete = User.objects.get(id=user_id)
         user_to_delete.delete()
