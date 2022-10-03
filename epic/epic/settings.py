@@ -148,9 +148,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} | {asctime} | {name} | {message}',
+            'style': '{',
+        }
+    },
+
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
     },
     # 'root': {
@@ -158,10 +166,14 @@ LOGGING = {
     #     'level': 'WARNING',
     # },
     'loggers': {
-        'epic.api.views.contacts_views': {
+        'api': {
             'handlers': ['console'],
             'level': 'WARNING',
             'propagate': False,
+        },
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
         },
     },
 }

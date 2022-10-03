@@ -254,5 +254,5 @@ def query_parameter_parser(validated_query_params: Set[str]):
 
 
 def logging_and_response(logger, error_message, error_status):
-    logger.warning('WARNING / ' + logger.name + ' -> ' + error_message)
+    logger.warning(error_message)
     return Response(data=error_message, status=error_status)
