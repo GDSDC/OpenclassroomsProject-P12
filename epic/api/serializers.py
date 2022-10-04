@@ -1,5 +1,8 @@
+import logging
+
 from django.contrib.auth import authenticate
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from core.contacts.models import Contact
 from core.contracts.models import Contract
@@ -47,6 +50,10 @@ class LoginSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+    # Overwriting is_valid to log errors
+    def is_valid(self, raise_exception=False):
+        return custom_is_valid(self, raise_exception)
+
 
 class SignUpSerializer(serializers.ModelSerializer):
     """Serializer for signup new user"""
@@ -66,6 +73,10 @@ class SignUpSerializer(serializers.ModelSerializer):
         if attrs['password1'] != attrs['password2']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
         return attrs
+
+    # Overwriting is_valid to log errors
+    def is_valid(self, raise_exception=False):
+        return custom_is_valid(self, raise_exception)
 
     def create(self, validated_data):
         user = User.objects.create(
@@ -94,6 +105,10 @@ class ContactSerializer(serializers.ModelSerializer):
             'phone': {'required': True},
             'company_name': {'required': True},
         }
+
+    # Overwriting is_valid to log errors
+    def is_valid(self, raise_exception=False):
+        return custom_is_valid(self, raise_exception)
 
     def create(self, validated_data):
         contact = Contact.objects.create(
@@ -129,8 +144,13 @@ class ContractSerializer(serializers.ModelSerializer):
         model = Contract
         fields = ['client', 'sales', 'status', 'amount', 'payment_due']
         extra_kwargs = {
-            'client': {'required': True}
+            # 'client' field is required but handled by context.get('contact_id') parameter
+            # 'client': {'required': True},
         }
+
+    # Overwriting is_valid to log errors
+    def is_valid(self, raise_exception=False):
+        return custom_is_valid(self, raise_exception)
 
     def create(self, validated_data):
         contract = Contract.objects.create(
@@ -161,9 +181,14 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ['client', 'support', 'status', 'attendees', 'event_date', 'notes']
         extra_kwargs = {
-            'client': {'required': True},
+            # 'client' field is required but handled by context.get('contact_id') parameter
+            # 'client': {'required': True},
             'event_date': {'required': True}
         }
+
+    # Overwriting is_valid to log errors
+    def is_valid(self, raise_exception=False):
+        return custom_is_valid(self, raise_exception)
 
     def create(self, validated_data):
         event = Event.objects.create(
@@ -187,3 +212,28 @@ class EventSerializer(serializers.ModelSerializer):
         instance.notes = validated_data.get('notes', instance.notes)
         instance.save()
         return instance
+
+
+# Custom is_valid method to log errors
+def custom_is_valid(self, raise_exception=False):
+    assert hasattr(self, 'initial_data'), (
+        'Cannot call `.is_valid()` as no `data=` keyword argument was '
+        'passed when instantiating the serializer instance.'
+    )
+
+    if not hasattr(self, '_validated_data'):
+        try:
+            self._validated_data = self.run_validation(self.initial_data)
+        except ValidationError as exc:
+            self._validated_data = {}
+            self._errors = exc.detail
+        else:
+            self._errors = {}
+
+    if self._errors and raise_exception:
+        # Logging errors
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.is_valid.__name__]))
+        logger.warning(self.errors)
+        raise ValidationError(self.errors)
+
+    return not bool(self._errors)

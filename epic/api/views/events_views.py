@@ -56,7 +56,7 @@ class GlobalEventView(APIView):
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
-        serializer = self.serializer_class(data=event_to_create, context={'contact_id': contact_id}, partial=True)
+        serializer = self.serializer_class(data=event_to_create, context={'contact_id': contact_id})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED, safe=False)

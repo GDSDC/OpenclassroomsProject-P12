@@ -7,7 +7,8 @@ from core.contacts.models import Contact
 class Event(models.Model):
     """Event class"""
 
-    client = models.ForeignKey(to=Contact, on_delete=models.CASCADE)
+    # 'client' field is required but handled by context.get('contact_id') parameter -> null=True
+    client = models.ForeignKey(to=Contact, on_delete=models.CASCADE, null=True)
     support = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     status = models.BooleanField(default=False)
     attendees = models.IntegerField(default=0)
