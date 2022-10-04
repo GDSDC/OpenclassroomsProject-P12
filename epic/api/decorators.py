@@ -126,124 +126,124 @@ def query_parameter_parser(validated_query_params: Set[str]):
                         error_status=status.HTTP_400_BAD_REQUEST)
                 query_params_arg['status'] = True if status_qp == 'true' else False
 
-            # EVENT_DATE_LOWER // check for 'event_date_lower' proper query parameter
-            event_date_lower_qp = query_params.get('event_date_lower', None)
-            if event_date_lower_qp is not None:
-                # check for 'event_date_lower' proper type -> isoformat string
+            # EVENT_DATE_AFTER // check for 'event_date_after' proper query parameter
+            event_date_after_qp = query_params.get('event_date_after', None)
+            if event_date_after_qp is not None:
+                # check for 'event_date_after' proper type -> isoformat string
                 try:
-                    event_date_lower_qp = datetime.fromisoformat(event_date_lower_qp)
-                    query_params_arg['event_date__gte'] = make_aware(event_date_lower_qp)
+                    event_date_after_qp = datetime.fromisoformat(event_date_after_qp)
+                    query_params_arg['event_date__gte'] = make_aware(event_date_after_qp)
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'event_date_lower'])),
-                        error_message="'event_date_lower' query parameter wrong format! "
-                                      "'event_date_lower' must be an isoformat string (ex : '2022-09-21').",
+                            '.'.join([__name__, query_parameter_parser.__name__, 'event_date_after'])),
+                        error_message="'event_date_after' query parameter wrong format! "
+                                      "'event_date_after' must be an isoformat string (ex : '2022-09-21').",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
-            # EVENT_DATE_UPPER // check for 'event_date_upper' proper query parameter
-            event_date_upper_qp = query_params.get('event_date_upper', None)
-            if event_date_upper_qp is not None:
-                # check for 'event_date_upper' proper type -> isoformat string
+            # EVENT_DATE_BEFORE // check for 'event_date_before' proper query parameter
+            event_date_before_qp = query_params.get('event_date_before', None)
+            if event_date_before_qp is not None:
+                # check for 'event_date_before' proper type -> isoformat string
                 try:
-                    event_date_upper_qp = datetime.fromisoformat(event_date_upper_qp)
-                    query_params_arg['event_date__lte'] = make_aware(event_date_upper_qp)
+                    event_date_before_qp = datetime.fromisoformat(event_date_before_qp)
+                    query_params_arg['event_date__lte'] = make_aware(event_date_before_qp)
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'event_date_upper'])),
-                        error_message="'event_date_upper' query parameter wrong format! "
-                                      "'event_date_upper' must be an isoformat string (ex : '2022-09-21').",
+                            '.'.join([__name__, query_parameter_parser.__name__, 'event_date_before'])),
+                        error_message="'event_date_before' query parameter wrong format! "
+                                      "'event_date_before' must be an isoformat string (ex : '2022-09-21').",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
-            # PAYMENT_DUE_LOWER // check for 'payment_due_lower' proper query parameter
-            payment_due_lower_qp = query_params.get('payment_due_lower', None)
-            if payment_due_lower_qp is not None:
-                # check for 'payment_due_lower' proper type -> isoformat string
+            # PAYMENT_DUE_AFTER // check for 'payment_due_after' proper query parameter
+            payment_due_after_qp = query_params.get('payment_due_after', None)
+            if payment_due_after_qp is not None:
+                # check for 'payment_due_after' proper type -> isoformat string
                 try:
-                    payment_due_lower_qp = datetime.fromisoformat(payment_due_lower_qp)
-                    query_params_arg['payment_due__gte'] = make_aware(payment_due_lower_qp)
+                    payment_due_after_qp = datetime.fromisoformat(payment_due_after_qp)
+                    query_params_arg['payment_due__gte'] = make_aware(payment_due_after_qp)
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'payment_due_lower'])),
-                        error_message="'payment_due_lower' query parameter wrong format! "
-                                      "'payment_due_lower' must be an isoformat string (ex : '2022-09-21').",
+                            '.'.join([__name__, query_parameter_parser.__name__, 'payment_due_after'])),
+                        error_message="'payment_due_after' query parameter wrong format! "
+                                      "'payment_due_after' must be an isoformat string (ex : '2022-09-21').",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
-            # PAYMENT_DUE_UPPER // check for 'payment_due_upper' proper query parameter
-            payment_due_upper_qp = query_params.get('payment_due_upper', None)
-            if payment_due_upper_qp is not None:
-                # check for 'payment_due_upper' proper type -> isoformat string
+            # PAYMENT_DUE_BEFORE // check for 'payment_due_before' proper query parameter
+            payment_due_before_qp = query_params.get('payment_due_before', None)
+            if payment_due_before_qp is not None:
+                # check for 'payment_due_before' proper type -> isoformat string
                 try:
-                    payment_due_upper_qp = datetime.fromisoformat(payment_due_upper_qp)
-                    query_params_arg['payment_due__lte'] = make_aware(payment_due_upper_qp)
+                    payment_due_before_qp = datetime.fromisoformat(payment_due_before_qp)
+                    query_params_arg['payment_due__lte'] = make_aware(payment_due_before_qp)
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'payment_due_upper'])),
-                        error_message="'payment_due_upper' query parameter wrong format! "
-                                      "'payment_due_upper' must be an isoformat string (ex : '2022-09-21').",
+                            '.'.join([__name__, query_parameter_parser.__name__, 'payment_due_before'])),
+                        error_message="'payment_due_before' query parameter wrong format! "
+                                      "'payment_due_before' must be an isoformat string (ex : '2022-09-21').",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
-            # ATTENDEES_LOWER // check for 'attendees_lower' proper query parameter
-            attendees_lower_qp = query_params.get('attendees_lower', None)
-            if attendees_lower_qp is not None:
-                # check for 'attendees_lower' proper type -> int
+            # ATTENDEES_ABOVE // check for 'attendees_above' proper query parameter
+            attendees_above_qp = query_params.get('attendees_above', None)
+            if attendees_above_qp is not None:
+                # check for 'attendees_above' proper type -> int
                 try:
-                    attendees_lower_qp = int(attendees_lower_qp)
-                    query_params_arg['attendees__gte'] = attendees_lower_qp
+                    attendees_above_qp = int(attendees_above_qp)
+                    query_params_arg['attendees__gte'] = attendees_above_qp
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'attendees_lower'])),
-                        error_message="'attendees_lower' query parameter wrong format! "
-                                      "'attendees_lower' must be an integer.",
+                            '.'.join([__name__, query_parameter_parser.__name__, 'attendees_above'])),
+                        error_message="'attendees_above' query parameter wrong format! "
+                                      "'attendees_above' must be an integer.",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
-            # ATTENDEES_UPPER // check for 'attendees_upper' proper query parameter
-            attendees_upper_qp = query_params.get('attendees_upper', None)
-            if attendees_upper_qp is not None:
-                # check for 'attendees_upper' proper type -> int
+            # ATTENDEES_BELOW // check for 'attendees_below' proper query parameter
+            attendees_below_qp = query_params.get('attendees_below', None)
+            if attendees_below_qp is not None:
+                # check for 'attendees_below' proper type -> int
                 try:
-                    attendees_upper_qp = int(attendees_upper_qp)
-                    query_params_arg['attendees__lte'] = attendees_upper_qp
+                    attendees_below_qp = int(attendees_below_qp)
+                    query_params_arg['attendees__lte'] = attendees_below_qp
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'attendees_upper'])),
-                        error_message="'attendees_upper' query parameter wrong format! "
-                                      "'attendees_upper' must be an integer.",
+                            '.'.join([__name__, query_parameter_parser.__name__, 'attendees_below'])),
+                        error_message="'attendees_below' query parameter wrong format! "
+                                      "'attendees_below' must be an integer.",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
-            # AMOUNT_LOWER // check for 'amount_due_lower' proper query parameter
-            amount_lower_qp = query_params.get('amount_lower', None)
-            if amount_lower_qp is not None:
-                # check for 'amount_lower' proper type -> int
+            # AMOUNT_ABOVE // check for 'amount_above' proper query parameter
+            amount_above_qp = query_params.get('amount_above', None)
+            if amount_above_qp is not None:
+                # check for 'amount_above' proper type -> int
                 try:
-                    amount_lower_qp = int(amount_lower_qp)
-                    query_params_arg['amount__gte'] = amount_lower_qp
+                    amount_above_qp = int(amount_above_qp)
+                    query_params_arg['amount__gte'] = amount_above_qp
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'amount_lower'])),
-                        error_message="'amount_lower' query parameter wrong format! "
-                                      "'amount_lower' must be an integer.",
+                            '.'.join([__name__, query_parameter_parser.__name__, 'amount_above'])),
+                        error_message="'amount_above' query parameter wrong format! "
+                                      "'amount_above' must be an integer.",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
-            # AMOUNT_UPPER // check for 'amount_upper' proper query parameter
-            amount_upper_qp = query_params.get('amount_upper', None)
-            if amount_upper_qp is not None:
-                # check for 'amount_upper' proper type -> int
+            # AMOUNT_BELOW  // check for 'amount_below' proper query parameter
+            amount_below_qp = query_params.get('amount_below', None)
+            if amount_below_qp is not None:
+                # check for 'amount_below' proper type -> int
                 try:
-                    amount_upper_qp = int(amount_upper_qp)
-                    query_params_arg['amount__lte'] = amount_upper_qp
+                    amount_below_qp = int(amount_below_qp)
+                    query_params_arg['amount__lte'] = amount_below_qp
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'amount_upper'])),
-                        error_message="'amount_upper' query parameter wrong format! "
-                                      "'amount_upper' must be an integer.",
+                            '.'.join([__name__, query_parameter_parser.__name__, 'amount_below'])),
+                        error_message="'amount_below' query parameter wrong format! "
+                                      "'amount_below' must be an integer.",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
             return f(*args, **kwargs, query_params=query_params_arg)

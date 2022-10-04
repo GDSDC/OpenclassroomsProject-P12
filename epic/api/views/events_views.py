@@ -26,8 +26,8 @@ class GlobalEventView(APIView):
 
     @query_parameter_parser(
         {'client_id', 'support_id', 'status',
-         'attendees_lower', 'attendees_upper',
-         'event_date_lower', 'event_date_upper'})
+         'attendees_above', 'attendees_below',
+         'event_date_after', 'event_date_before'})
     def get(self, request, query_params: Dict[str, Any] = {}):
         events = Event.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(events, many=True).data, status=status.HTTP_200_OK, safe=False)
