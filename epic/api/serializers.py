@@ -106,14 +106,21 @@ class ContactSerializer(serializers.ModelSerializer):
             'company_name': {'required': True},
         }
 
+    def validate(self, attrs):
+        # Check if user is Sales (to create a Contact for his own) or Admin
+        if self.context.get('user').role == User.Role.SALES:
+            attrs['sales'] = self.context.get('user')
+        elif self.context.get('user').role == User.Role.ADMIN:
+            attrs['sales'] = attrs.get('sales', None)
+        return attrs
+
     # Overwriting is_valid to log errors
     def is_valid(self, raise_exception=False):
         return custom_is_valid(self, raise_exception)
 
     def create(self, validated_data):
         contact = Contact.objects.create(
-            sales=User.objects.get(id=int(validated_data.get('sales').id))
-            if validated_data.get('sales', None) is not None else None,
+            sales=validated_data.get('sales'),
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
             phone=validated_data.get('phone'),
@@ -125,8 +132,7 @@ class ContactSerializer(serializers.ModelSerializer):
         return contact
 
     def update(self, instance, validated_data):
-        instance.sales = User.objects.get(id=int(validated_data.get('sales', instance.sales).id)) \
-            if validated_data.get('sales', instance.sales) is not None else None
+        instance.sales = validated_data.get('sales', instance.sales)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.phone = validated_data.get('phone', instance.phone)

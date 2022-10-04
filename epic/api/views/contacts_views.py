@@ -29,7 +29,7 @@ class GlobalContactView(APIView):
     @user_has_role({User.Role.ADMIN, User.Role.SALES})
     def post(self, request):
         contact_to_create = request.data
-        serializer = self.serializer_class(data=contact_to_create)
+        serializer = self.serializer_class(data=contact_to_create, context={'user': request.user})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -53,7 +53,7 @@ class ContactView(APIView):
 
     @user_has_role({User.Role.ADMIN, User.Role.SALES})
     def put(self, request, contact_id):
-        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.put.__name__])),
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.put.__name__]))
 
         # check if contact exists
         if not contact_exists(contact_id):
@@ -75,7 +75,8 @@ class ContactView(APIView):
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
-        serializer = self.serializer_class(contact_to_update, data=contact_updated_data, partial=True)
+        serializer = self.serializer_class(contact_to_update, data=contact_updated_data,
+                                           context={'user': request.user}, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
