@@ -98,10 +98,11 @@ class ContactSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contact
-        fields = ['sales', 'first_name', 'last_name', 'phone', 'mobile', 'company_name', 'is_client']
+        fields = ['sales', 'first_name', 'last_name', 'email', 'phone', 'mobile', 'company_name', 'is_client']
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
+            'email': {'required': True},
             'phone': {'required': True},
             'company_name': {'required': True},
         }
@@ -123,6 +124,7 @@ class ContactSerializer(serializers.ModelSerializer):
             sales=validated_data.get('sales'),
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
+            email =validated_data.get('email'),
             phone=validated_data.get('phone'),
             mobile=validated_data.get('mobile', ''),
             company_name=validated_data.get('company_name'),
@@ -135,6 +137,7 @@ class ContactSerializer(serializers.ModelSerializer):
         instance.sales = validated_data.get('sales', instance.sales)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.email = validated_data.get('email', instance.email)
         instance.phone = validated_data.get('phone', instance.phone)
         instance.mobile = validated_data.get('mobile', instance.mobile)
         instance.company_name = validated_data.get('company_name', instance.company_name)
