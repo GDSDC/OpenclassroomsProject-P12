@@ -21,7 +21,7 @@ class GlobalContactView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
 
-    @query_parameter_parser({'sales_id', 'company_name', 'is_client'})
+    @query_parameter_parser({'sales_id', 'company_name', 'is_client', 'email'})
     def get(self, request, query_params: Dict[str, Any] = {}):
         contacts = Contact.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(contacts, many=True).data, status=status.HTTP_200_OK, safe=False)

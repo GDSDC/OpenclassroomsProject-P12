@@ -103,6 +103,11 @@ def query_parameter_parser(validated_query_params: Set[str]):
             if company_name_qp is not None:
                 query_params_arg['company_name__icontains'] = company_name_qp
 
+            # EMAIL /// check for contact proper email query parameter
+            email_qp = query_params.get('email', None)
+            if email_qp is not None:
+                query_params_arg['email__icontains'] = email_qp
+
             # IS_CLIENT /// check for 'is_client' proper query parameter
             is_client_qp = query_params.get('is_client', None)
             if is_client_qp is not None:
