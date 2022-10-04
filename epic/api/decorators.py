@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 from functools import wraps
-from typing import Set
+from typing import Set, Dict
 
 from django.utils.timezone import make_aware
 from rest_framework import status
@@ -35,7 +35,7 @@ def user_has_role(roles_in: Set[User.Role]):
 
 # -------- Query Parameters Decorators --------
 
-def query_parameter_parser(validated_query_params: Set[str]):
+def query_parameter_parser_backup(validated_query_params: Set[str]):
     def _inner(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -48,7 +48,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 # checking valid keys
                 if qp not in validated_query_params:
                     return logging_and_response(
-                        logger=logging.getLogger('.'.join([__name__, query_parameter_parser.__name__, 'main'])),
+                        logger=logging.getLogger('.'.join([__name__, query_parameter_parser_backup.__name__, 'main'])),
                         error_message=f"Query parameter Key Error! Query parameters keys must be "
                                       f"{' and/or '.join([qp for qp in validated_query_params])}.",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -63,13 +63,14 @@ def query_parameter_parser(validated_query_params: Set[str]):
                     if not contact_exists(client_id_qp):
                         return logging_and_response(
                             logger=logging.getLogger(
-                                '.'.join([__name__, query_parameter_parser.__name__, 'client_id'])),
+                                '.'.join([__name__, query_parameter_parser_backup.__name__, 'client_id'])),
                             error_message=f'Client "{client_id_qp}" not found !',
                             error_status=status.HTTP_404_NOT_FOUND)
                     query_params_arg['client_id'] = client_id_qp
                 except ValueError:
                     return logging_and_response(
-                        logger=logging.getLogger('.'.join([__name__, query_parameter_parser.__name__, 'client_id'])),
+                        logger=logging.getLogger(
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'client_id'])),
                         error_message="'client_id' query parameter wrong value. 'client_id' must be an integer !",
                         error_status=status.HTTP_400_BAD_REQUEST)
 
@@ -83,7 +84,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                     if not user_exists(sales_id_qp):
                         return logging_and_response(
                             logger=logging.getLogger(
-                                '.'.join([__name__, query_parameter_parser.__name__, 'sales_id'])),
+                                '.'.join([__name__, query_parameter_parser_backup.__name__, 'sales_id'])),
                             error_message=f'Sales {sales_id_qp} not found !',
                             error_status=status.HTTP_404_NOT_FOUND)
                     query_params_arg['sales_id'] = sales_id_qp
@@ -93,7 +94,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                     else:
                         return logging_and_response(
                             logger=logging.getLogger(
-                                '.'.join([__name__, query_parameter_parser.__name__, 'sales_id'])),
+                                '.'.join([__name__, query_parameter_parser_backup.__name__, 'sales_id'])),
                             error_message="'sales_id' query parameter wrong value. "
                                           "'sales_id' must be an integer or null!",
                             error_status=status.HTTP_400_BAD_REQUEST)
@@ -114,7 +115,8 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 # check for 'is_client' query parameter proper type -> bool
                 if not (is_client_qp == 'true' or is_client_qp == 'false'):
                     return logging_and_response(
-                        logger=logging.getLogger('.'.join([__name__, query_parameter_parser.__name__, 'is_client'])),
+                        logger=logging.getLogger(
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'is_client'])),
                         error_message="'is_client' query parameter wrong value. "
                                       "'is_client' must be 'true' or 'false' !",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -126,7 +128,8 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 # check for 'status' query parameter proper type -> bool
                 if not (status_qp == 'true' or status_qp == 'false'):
                     return logging_and_response(
-                        logger=logging.getLogger('.'.join([__name__, query_parameter_parser.__name__, 'status'])),
+                        logger=logging.getLogger(
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'status'])),
                         error_message="'status' query parameter wrong value. 'status' must be 'true' or 'false' !",
                         error_status=status.HTTP_400_BAD_REQUEST)
                 query_params_arg['status'] = True if status_qp == 'true' else False
@@ -141,7 +144,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'event_date_after'])),
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'event_date_after'])),
                         error_message="'event_date_after' query parameter wrong format! "
                                       "'event_date_after' must be an isoformat string (ex : '2022-09-21').",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -156,7 +159,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'event_date_before'])),
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'event_date_before'])),
                         error_message="'event_date_before' query parameter wrong format! "
                                       "'event_date_before' must be an isoformat string (ex : '2022-09-21').",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -171,7 +174,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'payment_due_after'])),
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'payment_due_after'])),
                         error_message="'payment_due_after' query parameter wrong format! "
                                       "'payment_due_after' must be an isoformat string (ex : '2022-09-21').",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -186,7 +189,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'payment_due_before'])),
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'payment_due_before'])),
                         error_message="'payment_due_before' query parameter wrong format! "
                                       "'payment_due_before' must be an isoformat string (ex : '2022-09-21').",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -201,7 +204,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'attendees_above'])),
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'attendees_above'])),
                         error_message="'attendees_above' query parameter wrong format! "
                                       "'attendees_above' must be an integer.",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -216,7 +219,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'attendees_below'])),
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'attendees_below'])),
                         error_message="'attendees_below' query parameter wrong format! "
                                       "'attendees_below' must be an integer.",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -231,7 +234,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'amount_above'])),
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'amount_above'])),
                         error_message="'amount_above' query parameter wrong format! "
                                       "'amount_above' must be an integer.",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -246,7 +249,7 @@ def query_parameter_parser(validated_query_params: Set[str]):
                 except ValueError:
                     return logging_and_response(
                         logger=logging.getLogger(
-                            '.'.join([__name__, query_parameter_parser.__name__, 'amount_below'])),
+                            '.'.join([__name__, query_parameter_parser_backup.__name__, 'amount_below'])),
                         error_message="'amount_below' query parameter wrong format! "
                                       "'amount_below' must be an integer.",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -256,6 +259,76 @@ def query_parameter_parser(validated_query_params: Set[str]):
         return wrapper
 
     return _inner
+
+# TODO : deploy this decorator and add business responsabilty to views
+def query_parameter_parser(query_params_format: Dict[str, type]):
+    def _inner(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+
+            # query parameters checking
+            request = args[1]
+            query_params = request.query_params
+            for qp in query_params:
+                # checking valid keys
+                if qp not in query_params_format.keys():
+                    return logging_and_response(
+                        logger=logging.getLogger('.'.join([__name__, query_parameter_parser.__name__])),
+                        error_message=f"Query parameter Key Error! Query parameters keys must be "
+                                      f"{' and/or '.join([qp for qp in query_params_format.keys()])}.",
+                        error_status=status.HTTP_400_BAD_REQUEST)
+
+            # parsing query parameters
+            query_params_arg = {}
+            error_messages = []
+            for qp_key, qp_arg in query_params.items():
+                parsed_qp_arg = _pars_arg(qp_arg, query_params_format[qp_key])
+                if parsed_qp_arg is not None:
+                    query_params_arg[qp_key] = parsed_qp_arg
+                elif query_params_format[qp_key] == datetime:
+                    error_messages.append(
+                        f"'{qp_key}' ValueError ! "
+                        f"'{qp_key}' query parameter type must be 'isoformat'.")
+                else:
+                    error_messages.append(
+                        f"'{qp_key}' ValueError ! "
+                        f"'{qp_key}' query parameter type must be '{query_params_format[qp_key].__name__}'.")
+
+            if error_messages is not None:
+                return logging_and_response(
+                    logger=logging.getLogger('.'.join([__name__, query_parameter_parser.__name__])),
+                    error_message=' / '.join(error_messages),
+                    error_status=status.HTTP_400_BAD_REQUEST)
+
+            return f(*args, **kwargs, query_params=query_params_arg)
+
+        return wrapper
+
+    return _inner
+
+
+def _pars_arg(arg, cls):
+    if cls == str:
+        return arg
+    if cls == bool:
+        return True if arg.lower() == 'true' else False if arg.lower() == 'false' else None
+    if cls == datetime:
+        try:
+            return make_aware(datetime.fromisoformat(arg))
+        except ValueError:
+            return None
+    if cls == int:
+        try:
+            return int(arg)
+        except ValueError:
+            return None
+    if cls == float:
+        try:
+            return float(arg)
+        except ValueError:
+            return None
+
+    return None
 
 
 def logging_and_response(logger, error_message, error_status):
