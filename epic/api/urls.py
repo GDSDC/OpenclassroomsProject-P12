@@ -3,15 +3,16 @@ from django.urls import path
 from api.views.contacts_views import GlobalContactView, ContactView
 from api.views.contracts_views import GlobalContractView, ContractView
 from api.views.events_views import GlobalEventView, EventView
-from api.views.users_views import LoginView, LogoutView, SignupView, DeleteUserView
+from api.views.users_views import LoginView, LogoutView, SignupView, ManagerUserView
 
 urlpatterns = [
 
     # 1. auth
+    path('users/', ManagerUserView.as_view()),
+    path('users/<int:user_id>/', ManagerUserView.as_view()),
     path('users/login/', LoginView.as_view()),
     path('users/logout/', LogoutView.as_view()),
     path('users/signup/', SignupView.as_view()),
-    path('users/<int:user_id>/', DeleteUserView.as_view()),
 
     # 2. contacts
     path('contacts/', GlobalContactView.as_view()),

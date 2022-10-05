@@ -93,6 +93,14 @@ class SignUpSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserSerializer(serializers.ModelSerializer):
+    """Serializer for viewing Users"""
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone', 'mobile', 'role']
+
+
 class ContactSerializer(serializers.ModelSerializer):
     """Serializer for Contact (client or prospect)."""
 
@@ -124,7 +132,7 @@ class ContactSerializer(serializers.ModelSerializer):
             sales=validated_data.get('sales'),
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
-            email =validated_data.get('email'),
+            email=validated_data.get('email'),
             phone=validated_data.get('phone'),
             mobile=validated_data.get('mobile', ''),
             company_name=validated_data.get('company_name'),
