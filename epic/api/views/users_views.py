@@ -65,12 +65,14 @@ class ManagerUserView(APIView):
 
     @query_parameter_parser({'role': User.Role})
     def get(self, request, query_params: Dict[str, Any], user_id=None):
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__]))
+
         # Looking for a unique User data
         if user_id:
             # check if user exists
             if not user_exists(user_id=user_id):
                 return logging_and_response(
-                    logger=logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__])),
+                    logger=logger,
                     error_message=f"User '{user_id}' not found. Wrong contact_id.",
                     error_status=status.HTTP_404_NOT_FOUND)
             users = User.objects.get(id=user_id)
@@ -89,10 +91,12 @@ class ManagerUserView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, user_id):
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__]))
+
         # check if user_to_delete exists
         if not user_exists(user_id=user_id):
             return logging_and_response(
-                logger=logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__])),
+                logger=logger,
                 error_message=f"User '{user_id}' not found. Wrong contact_id.",
                 error_status=status.HTTP_404_NOT_FOUND)
 

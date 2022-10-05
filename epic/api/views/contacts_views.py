@@ -23,20 +23,19 @@ class GlobalContactView(APIView):
 
     @query_parameter_parser({'sales_id': int, 'email': str, 'company_name': str, 'is_client': bool})
     def get(self, request, query_params: Dict[str, Any]):
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__]))
 
         # sales_id query parameter /// check if user exists and is Sales
         if 'sales_id' in query_params.keys() and query_params['sales_id'] is not None:
             if not user_exists(query_params['sales_id']):
                 return logging_and_response(
-                    logger=logging.getLogger(
-                        '.'.join([__name__, query_parameter_parser.__name__, 'sales_id'])),
+                    logger=logger,
                     error_message=f"Sales '{query_params['sales_id']}' not found !",
                     error_status=status.HTTP_404_NOT_FOUND)
             elif User.objects.get(id=query_params['sales_id']).role != User.Role.SALES:
                 # TODO : only log for this part
                 return logging_and_response(
-                    logger=logging.getLogger(
-                        '.'.join([__name__, query_parameter_parser.__name__, 'sales_id'])),
+                    logger=logger,
                     error_message=f"User '{query_params['sales_id']}' is not Sales !",
                     error_status=status.HTTP_400_BAD_REQUEST)
 
@@ -58,10 +57,12 @@ class ContactView(APIView):
     serializer_class = ContactSerializer
 
     def get(self, request, contact_id):
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__]))
+
         # check if contact exists
         if not contact_exists(contact_id):
             return logging_and_response(
-                logger=logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__])),
+                logger=logger,
                 error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
                 error_status=status.HTTP_404_NOT_FOUND)
 
@@ -100,10 +101,12 @@ class ContactView(APIView):
 
     @user_has_role({User.Role.ADMIN})
     def delete(self, request, contact_id):
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__]))
+
         # check if contact exists
         if not contact_exists(contact_id):
             return logging_and_response(
-                logger=logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__])),
+                logger=logger,
                 error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
                 error_status=status.HTTP_404_NOT_FOUND)
 

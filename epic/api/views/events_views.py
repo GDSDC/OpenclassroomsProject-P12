@@ -31,13 +31,13 @@ class GlobalEventView(APIView):
          'attendees_above': float, 'attendees_below': float,
          'event_date_after': datetime, 'event_date_before': datetime})
     def get(self, request, query_params: Dict[str, Any]):
+        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__]))
 
         # client_id query parameter /// check if client(ie contact) exists
         if 'client_id' in query_params.keys():
             if not contact_exists(query_params['client_id']):
                 return logging_and_response(
-                    logger=logging.getLogger(
-                        '.'.join([__name__, query_parameter_parser.__name__, 'client_id'])),
+                    logger=logger,
                     error_message=f"Client '{query_params['client_id']}' not found !",
                     error_status=status.HTTP_404_NOT_FOUND)
 
@@ -45,15 +45,13 @@ class GlobalEventView(APIView):
         if 'support_id' in query_params.keys() and query_params['support_id'] is not None:
             if not user_exists(query_params['support_id']):
                 return logging_and_response(
-                    logger=logging.getLogger(
-                        '.'.join([__name__, query_parameter_parser.__name__, 'support_id'])),
+                    logger=logger,
                     error_message=f"Support '{query_params['support_id']}' not found !",
                     error_status=status.HTTP_404_NOT_FOUND)
             elif User.objects.get(id=query_params['support_id']).role != User.Role.SUPPORT:
                 # TODO : only log for this part
                 return logging_and_response(
-                    logger=logging.getLogger(
-                        '.'.join([__name__, query_parameter_parser.__name__, 'support_id'])),
+                    logger=logger,
                     error_message=f"User '{query_params['support_id']}' is not Support !",
                     error_status=status.HTTP_400_BAD_REQUEST)
 

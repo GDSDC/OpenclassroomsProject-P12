@@ -34,13 +34,14 @@ QP_FILTERS = {
 
 # -------- Permissions Decorators --------
 def user_has_role(roles_in: Set[User.Role]):
+    logger = logging.getLogger('.'.join([__name__, user_has_role.__name__]))
+
     def _inner(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
             request = args[1]
             user = request.user
             if user.role not in roles_in:
-                logger = logging.getLogger('.'.join([__name__, user_has_role.__name__]))
                 logger.warning(f'Access forbidden ! User {user.email} is not allowed. '
                                f'User need to be {" or ".join([role for role in roles_in])}.')
                 return Response(data='Access forbidden ! You are not allowed to do this. ',
@@ -56,6 +57,8 @@ def user_has_role(roles_in: Set[User.Role]):
 # -------- Query Parameters Decorators --------
 
 def query_parameter_parser(query_params_format: Dict[str, type]):
+    logger = logging.getLogger('.'.join([__name__, query_parameter_parser.__name__]))
+
     def _inner(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
@@ -67,7 +70,7 @@ def query_parameter_parser(query_params_format: Dict[str, type]):
                 # checking valid keys
                 if qp not in query_params_format.keys():
                     return logging_and_response(
-                        logger=logging.getLogger('.'.join([__name__, query_parameter_parser.__name__])),
+                        logger=logger,
                         error_message=f"Query parameter Key Error! Query parameters keys must be "
                                       f"{' and/or '.join([qp for qp in query_params_format.keys()])}.",
                         error_status=status.HTTP_400_BAD_REQUEST)
@@ -101,7 +104,7 @@ def query_parameter_parser(query_params_format: Dict[str, type]):
 
             if error_messages:
                 return logging_and_response(
-                    logger=logging.getLogger('.'.join([__name__, query_parameter_parser.__name__])),
+                    logger=logger,
                     error_message=' / '.join(error_messages),
                     error_status=status.HTTP_400_BAD_REQUEST)
 
