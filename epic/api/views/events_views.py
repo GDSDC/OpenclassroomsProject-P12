@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import EventSerializer
-from api.decorators import user_has_role, logging_and_response, query_parameter_parser
+from api.decorators import user_has_role, query_parameter_parser
 from core.users.models import User
 from core.users.services import user_exists
 from core.contacts.models import Contact
@@ -36,25 +36,20 @@ class GlobalEventView(APIView):
         # client_id query parameter /// check if client(ie contact) exists
         if 'client_id' in query_params.keys():
             if not contact_exists(query_params['client_id']):
-                return logging_and_response(
-                    logger=logger,
-                    error_message=f"Client '{query_params['client_id']}' not found !",
-                    error_status=status.HTTP_404_NOT_FOUND)
+                return Response(data=f"Client '{query_params['client_id']}' not found !",
+                                status=status.HTTP_404_NOT_FOUND)
 
         # support_id query parameter /// check if user exists and is Support
         if 'support_id' in query_params.keys() and query_params['support_id'] is not None:
             if not user_exists(query_params['support_id']):
-                return logging_and_response(
-                    logger=logger,
-                    error_message=f"Support '{query_params['support_id']}' not found !",
-                    error_status=status.HTTP_404_NOT_FOUND)
-            elif User.objects.get(id=query_params['support_id']).role != User.Role.SUPPORT:
-                # TODO : only log for this part
-                return logging_and_response(
-                    logger=logger,
-                    error_message=f"User '{query_params['support_id']}' is not Support !",
-                    error_status=status.HTTP_400_BAD_REQUEST)
-
+                return Response(data=f"Support '{query_params['support_id']}' not found !",
+                                status=status.HTTP_404_NOT_FOUND)
+            else:
+                # check if 'support_id' correspond to a SUPPORT
+                qp_user_role = User.objects.get(id=query_params['support_id']).role
+                if qp_user_role != User.Role.SUPPORT:
+                    # only log for this part
+                    logger.warning(f"User '{query_params['support_id']}' is {qp_user_role}, not SUPPORT !")
 
         events = Event.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(events, many=True).data, status=status.HTTP_200_OK, safe=False)
@@ -65,10 +60,8 @@ class GlobalEventView(APIView):
 
         # check if contact exists
         if not contact_exists(contact_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         event_to_create = request.data
         contact = Contact.objects.get(id=contact_id)
@@ -100,26 +93,22 @@ class EventView(APIView):
 
         # check if contact exists
         if not contact_exists(contact_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         # check if event exists
         if not event_exists(event_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Event '{event_id}' not found. Wrong event_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Event '{event_id}' not found. Wrong event_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         event = Event.objects.get(id=event_id)
 
         # check if event belongs to contact
         if not event.client.id == contact_id:
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Event '{event_id}' does not belong to Client '{contact_id}' !",
-                error_status=status.HTTP_400_BAD_REQUEST)
+            logging.warning(f"Event '{event_id}' does not belong to Client '{contact_id}' "
+                            f"but Client {event.client_id} !")
+            return Response(data=f"Event '{event_id}' does not belong to Client '{contact_id}' !",
+                            status=status.HTTP_400_BAD_REQUEST)
 
         return JsonResponse(self.serializer_class(event).data, status=status.HTTP_200_OK, safe=False)
 
@@ -129,27 +118,23 @@ class EventView(APIView):
 
         # check if contact exists
         if not contact_exists(contact_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         # check if event exists
         if not event_exists(event_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Event '{event_id}' not found. Wrong event_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Event '{event_id}' not found. Wrong event_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         event_updated_data = request.data
         event_to_update = Event.objects.get(id=event_id)
 
         # check if event belongs to contact
         if not event_to_update.client.id == contact_id:
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Event '{event_id}' does not belong to Client '{contact_id}' !",
-                error_status=status.HTTP_400_BAD_REQUEST)
+            logging.warning(f"Event '{event_id}' does not belong to Client '{contact_id}' "
+                            f"but Client {event_to_update.client_id} !")
+            return Response(data=f"Event '{event_id}' does not belong to Client '{contact_id}' !",
+                            status=status.HTTP_400_BAD_REQUEST)
 
         # check if user is owner of contact (ie is sales of the contact)
         user = request.user
@@ -159,13 +144,13 @@ class EventView(APIView):
                 f"Access forbidden ! User '{user.email}' is not attached to contact '{contact_id}' "
                 f"({contact.first_name} {contact.last_name} "
                 f"from {contact.company_name} company) or admin.")
-            return Response('Access forbidden ! You are not attached to the contact or admin.',
+            return Response('Access forbidden ! You are not attached to the contact or ADMIN.',
                             status=status.HTTP_403_FORBIDDEN)
 
         # check if user is attached to event (ie is support of the event)
         if user.role == User.Role.SUPPORT and not event_to_update.support_id == user.id:
             logger.warning(
-                f"Access forbidden ! User '{user.email}' is not attached to event '{event_id}' or admin.")
+                f"Access forbidden ! User '{user.email}' is not attached to event '{event_id}' or ADMIN.")
             return Response('Access forbidden ! You are not attached to the event or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
@@ -180,26 +165,22 @@ class EventView(APIView):
 
         # check if contact exists
         if not contact_exists(contact_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         # check if event exists
         if not event_exists(event_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Event '{event_id}' not found. Wrong event_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Event '{event_id}' not found. Wrong event_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         event_to_delete = Event.objects.get(id=event_id)
 
         # check if event belongs to contact
         if not event_to_delete.client.id == contact_id:
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Event '{event_id}' does not belong to Client '{contact_id}' !",
-                error_status=status.HTTP_400_BAD_REQUEST)
+            logging.warning(f"Event '{event_id}' does not belong to Client '{contact_id}' "
+                            f"but Client {event_to_delete.client_id} !")
+            return Response(data=f"Event '{event_id}' does not belong to Client '{contact_id}' !",
+                            status=status.HTTP_400_BAD_REQUEST)
 
         event_to_delete.delete()
         return Response('Event deleted successfully !', status=status.HTTP_200_OK)

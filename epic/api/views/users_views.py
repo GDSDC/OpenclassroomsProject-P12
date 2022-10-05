@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import LoginSerializer, SignUpSerializer, UserSerializer
-from api.decorators import logging_and_response, query_parameter_parser
+from api.decorators import query_parameter_parser
 from core.users.models import User
 from core.users.services import user_exists
 
@@ -71,10 +71,8 @@ class ManagerUserView(APIView):
         if user_id:
             # check if user exists
             if not user_exists(user_id=user_id):
-                return logging_and_response(
-                    logger=logger,
-                    error_message=f"User '{user_id}' not found. Wrong contact_id.",
-                    error_status=status.HTTP_404_NOT_FOUND)
+                return Response(data=f"User '{user_id}' not found. Wrong contact_id.",
+                                status=status.HTTP_404_NOT_FOUND)
             users = User.objects.get(id=user_id)
             is_many = False
         else:
@@ -95,10 +93,8 @@ class ManagerUserView(APIView):
 
         # check if user_to_delete exists
         if not user_exists(user_id=user_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"User '{user_id}' not found. Wrong contact_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"User '{user_id}' not found. Wrong contact_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         user_to_delete = User.objects.get(id=user_id)
         user_to_delete.delete()

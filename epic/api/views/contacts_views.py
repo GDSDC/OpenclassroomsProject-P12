@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import ContactSerializer
-from api.decorators import user_has_role, query_parameter_parser, logging_and_response
+from api.decorators import user_has_role, query_parameter_parser
 from core.users.models import User
 from core.users.services import user_exists
 from core.contacts.models import Contact
@@ -28,16 +28,14 @@ class GlobalContactView(APIView):
         # sales_id query parameter /// check if user exists and is Sales
         if 'sales_id' in query_params.keys() and query_params['sales_id'] is not None:
             if not user_exists(query_params['sales_id']):
-                return logging_and_response(
-                    logger=logger,
-                    error_message=f"Sales '{query_params['sales_id']}' not found !",
-                    error_status=status.HTTP_404_NOT_FOUND)
-            elif User.objects.get(id=query_params['sales_id']).role != User.Role.SALES:
-                # TODO : only log for this part
-                return logging_and_response(
-                    logger=logger,
-                    error_message=f"User '{query_params['sales_id']}' is not Sales !",
-                    error_status=status.HTTP_400_BAD_REQUEST)
+                return Response(data=f"Sales '{query_params['sales_id']}' not found !",
+                                status=status.HTTP_404_NOT_FOUND)
+            else:
+                # check if 'sales_id' correspond to a SALES
+                qp_user_role = User.objects.get(id=query_params['sales_id']).role
+                if qp_user_role != User.Role.SALES:
+                    # only log for this part
+                    logger.warning(f"User '{query_params['sales_id']}' is {qp_user_role}, not SALES !")
 
         contacts = Contact.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(contacts, many=True).data, status=status.HTTP_200_OK, safe=False)
@@ -57,14 +55,11 @@ class ContactView(APIView):
     serializer_class = ContactSerializer
 
     def get(self, request, contact_id):
-        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__]))
 
         # check if contact exists
         if not contact_exists(contact_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         contact = Contact.objects.get(id=contact_id)
         return JsonResponse(self.serializer_class(contact).data, status=status.HTTP_200_OK, safe=False)
@@ -75,10 +70,8 @@ class ContactView(APIView):
 
         # check if contact exists
         if not contact_exists(contact_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         contact_updated_data = request.data
         contact_to_update = Contact.objects.get(id=contact_id)
@@ -89,7 +82,7 @@ class ContactView(APIView):
             logger.warning(
                 f"Access forbidden ! User '{user.email}' is not attached to contact '{contact_id}' "
                 f"({contact_to_update.first_name} {contact_to_update.last_name} "
-                f"from {contact_to_update.company_name} company) or admin.")
+                f"from {contact_to_update.company_name} company) or ADMIN.")
             return Response('Access forbidden ! You are not attached to the contact or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
@@ -101,14 +94,11 @@ class ContactView(APIView):
 
     @user_has_role({User.Role.ADMIN})
     def delete(self, request, contact_id):
-        logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__]))
 
         # check if contact exists
         if not contact_exists(contact_id):
-            return logging_and_response(
-                logger=logger,
-                error_message=f"Contact '{contact_id}' not found. Wrong contact_id.",
-                error_status=status.HTTP_404_NOT_FOUND)
+            return Response(data=f"Contact '{contact_id}' not found. Wrong contact_id.",
+                            status=status.HTTP_404_NOT_FOUND)
 
         contact_to_delete = Contact.objects.get(id=contact_id)
         contact_to_delete.delete()

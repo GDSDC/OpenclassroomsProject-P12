@@ -69,11 +69,11 @@ def query_parameter_parser(query_params_format: Dict[str, type]):
             for qp in query_params:
                 # checking valid keys
                 if qp not in query_params_format.keys():
-                    return logging_and_response(
-                        logger=logger,
-                        error_message=f"Query parameter Key Error! Query parameters keys must be "
-                                      f"{' and/or '.join([qp for qp in query_params_format.keys()])}.",
-                        error_status=status.HTTP_400_BAD_REQUEST)
+                    error_message = f"Query parameter Key Error! Query parameters keys must be " \
+                                    f"{' and/or '.join([qp for qp in query_params_format.keys()])}."
+                    logger.warning(error_message)
+                    return Response(data=error_message,
+                                    status=status.HTTP_400_BAD_REQUEST)
 
             # parsing query parameters
             query_params_arg = {}
@@ -103,10 +103,10 @@ def query_parameter_parser(query_params_format: Dict[str, type]):
                         f"'{qp_key}' query parameter type must be '{query_params_format[qp_key].__name__}'.")
 
             if error_messages:
-                return logging_and_response(
-                    logger=logger,
-                    error_message=' / '.join(error_messages),
-                    error_status=status.HTTP_400_BAD_REQUEST)
+                error_message = ' / '.join(error_messages)
+                logging.warning(error_message)
+                return Response(data=error_message,
+                                status=status.HTTP_400_BAD_REQUEST)
 
             return f(*args, **kwargs, query_params=query_params_arg)
 
@@ -135,9 +135,3 @@ def _pars_arg(arg, cls):
             return cls(arg)
         except ValueError:
             return None
-
-
-
-def logging_and_response(logger, error_message, error_status):
-    logger.warning(error_message)
-    return Response(data=error_message, status=error_status)
