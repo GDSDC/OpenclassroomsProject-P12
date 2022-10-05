@@ -62,7 +62,6 @@ class ManagerUserView(APIView):
 
     # This view should be accessible only for IsAuthenticated users and Admin users (user.role = 'ADMIN').
     permission_classes = (IsAuthenticated, IsAdminUser)
-    serializer_class = UserSerializer
 
     @query_parameter_parser({'role': User.Role})
     def get(self, request, query_params: Dict[str, Any], user_id=None):
@@ -80,7 +79,14 @@ class ManagerUserView(APIView):
             # Looking for multiple Users data
             users = User.objects.filter(**query_params)
             is_many = True
-        return JsonResponse(self.serializer_class(users, many=is_many).data, status=status.HTTP_200_OK, safe=False)
+        return JsonResponse(UserSerializer(users, many=is_many).data, status=status.HTTP_200_OK, safe=False)
+
+    def post(self, request):
+        user_to_create = request.data
+        serializer = SignUpSerializer(data=user_to_create)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, user_id):
         # check if user_to_delete exists
