@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import ContactSerializer
-from api.decorators import user_has_role, query_parameter_parser_backup, logging_and_response
+from api.decorators import user_has_role, query_parameter_parser, logging_and_response
 from core.users.models import User
 from core.users.services import user_exists
 from core.contacts.models import Contact
@@ -21,8 +21,25 @@ class GlobalContactView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
 
-    @query_parameter_parser_backup({'sales_id', 'company_name', 'is_client', 'email'})
-    def get(self, request, query_params: Dict[str, Any] = {}):
+    @query_parameter_parser({'sales_id': int, 'email': str, 'company_name': str, 'is_client': bool})
+    def get(self, request, query_params: Dict[str, Any]):
+
+        # sales_id query parameter /// check if user exists and is Sales
+        if 'sales_id' in query_params.keys() and query_params['sales_id'] is not None:
+            if not user_exists(query_params['sales_id']):
+                return logging_and_response(
+                    logger=logging.getLogger(
+                        '.'.join([__name__, query_parameter_parser.__name__, 'sales_id'])),
+                    error_message=f"Sales '{query_params['sales_id']}' not found !",
+                    error_status=status.HTTP_404_NOT_FOUND)
+            elif User.objects.get(id=query_params['sales_id']).role != User.Role.SALES:
+                # TODO : only log for this part
+                return logging_and_response(
+                    logger=logging.getLogger(
+                        '.'.join([__name__, query_parameter_parser.__name__, 'sales_id'])),
+                    error_message=f"User '{query_params['sales_id']}' is not Sales !",
+                    error_status=status.HTTP_400_BAD_REQUEST)
+
         contacts = Contact.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(contacts, many=True).data, status=status.HTTP_200_OK, safe=False)
 

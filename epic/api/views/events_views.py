@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 from typing import Any, Dict
 
@@ -8,8 +9,9 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import EventSerializer
-from api.decorators import user_has_role, query_parameter_parser_backup, logging_and_response
+from api.decorators import user_has_role, logging_and_response, query_parameter_parser
 from core.users.models import User
+from core.users.services import user_exists
 from core.contacts.models import Contact
 from core.contacts.services import contact_exists
 from core.contracts.models import Contract
@@ -24,11 +26,38 @@ class GlobalEventView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
 
-    @query_parameter_parser_backup(
-        {'client_id', 'support_id', 'status',
-         'attendees_above', 'attendees_below',
-         'event_date_after', 'event_date_before'})
-    def get(self, request, query_params: Dict[str, Any] = {}):
+    @query_parameter_parser(
+        {'client_id': int, 'support_id': int, 'status': bool,
+         'attendees_above': float, 'attendees_below': float,
+         'event_date_after': datetime, 'event_date_before': datetime})
+    def get(self, request, query_params: Dict[str, Any]):
+
+        # client_id query parameter /// check if client(ie contact) exists
+        if 'client_id' in query_params.keys():
+            if not contact_exists(query_params['client_id']):
+                return logging_and_response(
+                    logger=logging.getLogger(
+                        '.'.join([__name__, query_parameter_parser.__name__, 'client_id'])),
+                    error_message=f"Client '{query_params['client_id']}' not found !",
+                    error_status=status.HTTP_404_NOT_FOUND)
+
+        # support_id query parameter /// check if user exists and is Support
+        if 'support_id' in query_params.keys() and query_params['support_id'] is not None:
+            if not user_exists(query_params['support_id']):
+                return logging_and_response(
+                    logger=logging.getLogger(
+                        '.'.join([__name__, query_parameter_parser.__name__, 'support_id'])),
+                    error_message=f"Support '{query_params['support_id']}' not found !",
+                    error_status=status.HTTP_404_NOT_FOUND)
+            elif User.objects.get(id=query_params['support_id']).role != User.Role.SUPPORT:
+                # TODO : only log for this part
+                return logging_and_response(
+                    logger=logging.getLogger(
+                        '.'.join([__name__, query_parameter_parser.__name__, 'support_id'])),
+                    error_message=f"User '{query_params['support_id']}' is not Support !",
+                    error_status=status.HTTP_400_BAD_REQUEST)
+
+
         events = Event.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(events, many=True).data, status=status.HTTP_200_OK, safe=False)
 
