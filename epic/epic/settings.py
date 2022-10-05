@@ -160,11 +160,11 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
+        'hidden': {
+            'class': 'logging.NullHandler',
+            'formatter': 'verbose',
+        }
     },
-    # 'root': {
-    #     'handlers': ['console'],
-    #     'level': 'WARNING',
-    # },
     'loggers': {
         'api': {
             'handlers': ['console'],
@@ -173,7 +173,11 @@ LOGGING = {
         },
         'django': {
             'handlers': ['console'],
-            'propagate': True,
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['hidden'],
+            'propagate': False,
         },
     },
 }
