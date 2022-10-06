@@ -1,6 +1,7 @@
 import logging
 
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import Group
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -62,7 +63,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password1', 'password2', 'first_name', 'last_name', 'phone', 'mobile', 'role']
+        fields = ['email', 'password1', 'password2', 'first_name', 'last_name', 'phone', 'mobile', 'role', 'is_staff']
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
@@ -86,9 +87,13 @@ class SignUpSerializer(serializers.ModelSerializer):
             phone=validated_data.get('phone', ''),
             mobile=validated_data.get('mobile', ''),
             role=validated_data.get('role'),
+            is_staff=validated_data.get('is_staff', False)
         )
-
         user.set_password(validated_data['password1'])
+        # add user to STAFF group for admin permissions if needed
+        if user.is_staff:
+            staff_group = Group.objects.get(name='STAFF')
+            user.groups.add(staff_group)
         user.save()
         return user
 
