@@ -71,7 +71,7 @@ class ManagerUserView(APIView):
         if user_id:
             # check if user exists
             if not user_exists(user_id=user_id):
-                return Response(data=f"User '{user_id}' not found. Wrong contact_id.",
+                return Response(data=f"User '{user_id}' not found. Wrong user_id.",
                                 status=status.HTTP_404_NOT_FOUND)
             users = User.objects.get(id=user_id)
             is_many = False
@@ -93,7 +93,7 @@ class ManagerUserView(APIView):
 
         # check if user_to_delete exists
         if not user_exists(user_id=user_id):
-            return Response(data=f"User '{user_id}' not found. Wrong contact_id.",
+            return Response(data=f"User '{user_id}' not found. Wrong user_id.",
                             status=status.HTTP_404_NOT_FOUND)
 
         user_to_delete = User.objects.get(id=user_id)

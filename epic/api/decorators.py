@@ -7,7 +7,7 @@ from django.utils.timezone import make_aware
 from rest_framework import status
 from rest_framework.response import Response
 
-from core.contacts.services import contact_exists
+from core.clients.services import client_exists
 from core.users.models import User
 from core.users.services import user_exists
 

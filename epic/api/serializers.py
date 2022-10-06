@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from core.contacts.models import Contact
+from core.clients.models import Client
 from core.contracts.models import Contract
 from core.events.models import Event
 from core.users.models import User
@@ -101,11 +101,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'first_name', 'last_name', 'phone', 'mobile', 'role']
 
 
-class ContactSerializer(serializers.ModelSerializer):
-    """Serializer for Contact (client or prospect)."""
+class ClientSerializer(serializers.ModelSerializer):
+    """Serializer for Client."""
 
     class Meta:
-        model = Contact
+        model = Client
         fields = ['sales', 'first_name', 'last_name', 'email', 'phone', 'mobile', 'company_name', 'is_client']
         extra_kwargs = {
             'first_name': {'required': True},
@@ -116,7 +116,7 @@ class ContactSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-        # Check if user is Sales (to create a Contact for his own) or Admin
+        # Check if user is Sales (to create a Client for his own) or Admin
         if self.context.get('user').role == User.Role.SALES:
             attrs['sales'] = self.context.get('user')
         elif self.context.get('user').role == User.Role.ADMIN:
@@ -128,7 +128,7 @@ class ContactSerializer(serializers.ModelSerializer):
         return custom_is_valid(self, raise_exception)
 
     def create(self, validated_data):
-        contact = Contact.objects.create(
+        contact = Client.objects.create(
             sales=validated_data.get('sales'),
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
@@ -171,7 +171,7 @@ class ContractSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         contract = Contract.objects.create(
-            client=Contact.objects.get(id=self.context.get('contact_id')),
+            client=Client.objects.get(id=self.context.get('contact_id')),
             sales=User.objects.get(id=int(validated_data.get('sales').id))
             if validated_data.get('sales', None) is not None else None,
             status=validated_data.get('status', False),
@@ -209,7 +209,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         event = Event.objects.create(
-            client=Contact.objects.get(id=self.context.get('contact_id')),
+            client=Client.objects.get(id=self.context.get('contact_id')),
             support=User.objects.get(id=int(validated_data.get('support').id))
             if validated_data.get('support', None) is not None else None,
             status=validated_data.get('status', False),
