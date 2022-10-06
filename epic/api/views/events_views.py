@@ -54,7 +54,7 @@ class GlobalEventView(APIView):
         events = Event.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(events, many=True).data, status=status.HTTP_200_OK, safe=False)
 
-    @user_has_role({User.Role.ADMIN, User.Role.SALES})
+    @user_has_role({User.Role.STAFF, User.Role.SALES})
     def post(self, request, client_id):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.post.__name__]))
 
@@ -112,7 +112,7 @@ class EventView(APIView):
 
         return JsonResponse(self.serializer_class(event).data, status=status.HTTP_200_OK, safe=False)
 
-    @user_has_role({User.Role.ADMIN, User.Role.SALES, User.Role.SUPPORT})
+    @user_has_role({User.Role.STAFF, User.Role.SALES, User.Role.SUPPORT})
     def put(self, request, client_id, event_id):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.put.__name__]))
 
@@ -159,7 +159,7 @@ class EventView(APIView):
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
-    @user_has_role({User.Role.ADMIN})
+    @user_has_role({User.Role.STAFF})
     def delete(self, request, client_id, event_id):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__]))
 

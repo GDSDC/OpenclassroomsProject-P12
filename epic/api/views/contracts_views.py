@@ -52,7 +52,7 @@ class GlobalContractView(APIView):
         contracts = Contract.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(contracts, many=True).data, status=status.HTTP_200_OK, safe=False)
 
-    @user_has_role({User.Role.ADMIN, User.Role.SALES})
+    @user_has_role({User.Role.STAFF, User.Role.SALES})
     def post(self, request, client_id):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.post.__name__]))
 
@@ -110,7 +110,7 @@ class ContractView(APIView):
 
         return JsonResponse(self.serializer_class(contract).data, status=status.HTTP_200_OK, safe=False)
 
-    @user_has_role({User.Role.ADMIN, User.Role.SALES})
+    @user_has_role({User.Role.STAFF, User.Role.SALES})
     def put(self, request, client_id, contract_id):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.put.__name__]))
 
@@ -150,7 +150,7 @@ class ContractView(APIView):
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
-    @user_has_role({User.Role.ADMIN})
+    @user_has_role({User.Role.STAFF})
     def delete(self, request, client_id, contract_id):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__]))
 

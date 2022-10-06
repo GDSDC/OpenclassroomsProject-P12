@@ -40,7 +40,7 @@ class GlobalClientView(APIView):
         clients = Client.objects.filter(**query_params)
         return JsonResponse(self.serializer_class(clients, many=True).data, status=status.HTTP_200_OK, safe=False)
 
-    @user_has_role({User.Role.ADMIN, User.Role.SALES})
+    @user_has_role({User.Role.STAFF, User.Role.SALES})
     def post(self, request):
         client_to_create = request.data
         serializer = self.serializer_class(data=client_to_create, context={'user': request.user})
@@ -64,7 +64,7 @@ class ClienttView(APIView):
         client = Client.objects.get(id=client_id)
         return JsonResponse(self.serializer_class(client).data, status=status.HTTP_200_OK, safe=False)
 
-    @user_has_role({User.Role.ADMIN, User.Role.SALES})
+    @user_has_role({User.Role.STAFF, User.Role.SALES})
     def put(self, request, client_id):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.put.__name__]))
 
@@ -92,7 +92,7 @@ class ClienttView(APIView):
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
-    @user_has_role({User.Role.ADMIN})
+    @user_has_role({User.Role.STAFF})
     def delete(self, request, client_id):
 
         # check if client exists

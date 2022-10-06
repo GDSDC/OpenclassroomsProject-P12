@@ -27,13 +27,13 @@ class UserManager(BaseUserManager):
     def create_staffuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', False)
-        extra_fields.setdefault('role', User.Role.ADMIN)
+        extra_fields.setdefault('role', User.Role.STAFF)
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('role', User.Role.ADMIN)
+        extra_fields.setdefault('role', User.Role.STAFF)
         return self._create_user(email, password, **extra_fields)
 
 
@@ -41,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     """User custom class"""
 
     class Role(models.TextChoices):
-        ADMIN = 'ADMIN', 'Admin'
+        STAFF = 'STAFF', 'Staff'
         SALES = 'SALES', 'Sales'
         SUPPORT = 'SUPPORT', 'Support'
 

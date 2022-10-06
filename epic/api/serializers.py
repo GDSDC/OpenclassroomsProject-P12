@@ -63,7 +63,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password1', 'password2', 'first_name', 'last_name', 'phone', 'mobile', 'role', 'is_staff']
+        fields = ['email', 'password1', 'password2', 'first_name', 'last_name', 'phone', 'mobile', 'role']
         extra_kwargs = {
             'first_name': {'required': True},
             'last_name': {'required': True},
@@ -87,7 +87,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             phone=validated_data.get('phone', ''),
             mobile=validated_data.get('mobile', ''),
             role=validated_data.get('role'),
-            is_staff=validated_data.get('is_staff', False)
+            is_staff=True if role == User.Role.STAFF else False
         )
         user.set_password(validated_data['password1'])
         # add user to STAFF group for admin permissions if needed
@@ -124,7 +124,7 @@ class ClientSerializer(serializers.ModelSerializer):
         # Check if user is Sales (to create a Client for his own) or Admin
         if self.context.get('user').role == User.Role.SALES:
             attrs['sales'] = self.context.get('user')
-        elif self.context.get('user').role == User.Role.ADMIN:
+        elif self.context.get('user').role == User.Role.STAFF:
             attrs['sales'] = attrs.get('sales', None)
         return attrs
 
