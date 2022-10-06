@@ -87,11 +87,11 @@ class SignUpSerializer(serializers.ModelSerializer):
             phone=validated_data.get('phone', ''),
             mobile=validated_data.get('mobile', ''),
             role=validated_data.get('role'),
-            is_staff=True if role == User.Role.STAFF else False
         )
         user.set_password(validated_data['password1'])
         # add user to STAFF group for admin permissions if needed
-        if user.is_staff:
+        if user.role == User.Role.STAFF:
+            user.is_staff = True
             staff_group = Group.objects.get(name='STAFF')
             user.groups.add(staff_group)
         user.save()
@@ -133,7 +133,7 @@ class ClientSerializer(serializers.ModelSerializer):
         return custom_is_valid(self, raise_exception)
 
     def create(self, validated_data):
-        contact = Client.objects.create(
+        client = Client.objects.create(
             sales=validated_data.get('sales'),
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
@@ -143,8 +143,8 @@ class ClientSerializer(serializers.ModelSerializer):
             company_name=validated_data.get('company_name'),
             is_client=validated_data.get('is_client', False),
         )
-        contact.save()
-        return contact
+        client.save()
+        return client
 
     def update(self, instance, validated_data):
         instance.sales = validated_data.get('sales', instance.sales)
@@ -166,9 +166,17 @@ class ContractSerializer(serializers.ModelSerializer):
         model = Contract
         fields = ['client', 'sales', 'status', 'amount', 'payment_due']
         extra_kwargs = {
-            # 'client' field is required but handled by context.get('contact_id') parameter
+            # 'client' field is required but handled by context.get('client_id') parameter
             # 'client': {'required': True},
         }
+
+    def validate(self, attrs):
+        # Check if user is Sales (to create a Contract for his own) or Admin
+        if self.context.get('user').role == User.Role.SALES:
+            attrs['sales'] = self.context.get('user')
+        elif self.context.get('user').role == User.Role.STAFF:
+            attrs['sales'] = attrs.get('sales', None)
+        return attrs
 
     # Overwriting is_valid to log errors
     def is_valid(self, raise_exception=False):
@@ -176,9 +184,8 @@ class ContractSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         contract = Contract.objects.create(
-            client=Client.objects.get(id=self.context.get('contact_id')),
-            sales=User.objects.get(id=int(validated_data.get('sales').id))
-            if validated_data.get('sales', None) is not None else None,
+            client=Client.objects.get(id=self.context.get('client_id')),
+            sales=validated_data.get('sales'),
             status=validated_data.get('status', False),
             amount=validated_data.get('amount', 0),
             payment_due=validated_data.get('payment_due', None),
@@ -203,7 +210,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ['client', 'support', 'status', 'attendees', 'event_date', 'notes']
         extra_kwargs = {
-            # 'client' field is required but handled by context.get('contact_id') parameter
+            # 'client' field is required but handled by context.get('client_id') parameter
             # 'client': {'required': True},
             'event_date': {'required': True}
         }
@@ -214,7 +221,7 @@ class EventSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         event = Event.objects.create(
-            client=Client.objects.get(id=self.context.get('contact_id')),
+            client=Client.objects.get(id=self.context.get('client_id')),
             support=User.objects.get(id=int(validated_data.get('support').id))
             if validated_data.get('support', None) is not None else None,
             status=validated_data.get('status', False),

@@ -74,7 +74,9 @@ class GlobalContractView(APIView):
             return Response('Access forbidden ! You are not attached to the client or admin.',
                             status=status.HTTP_403_FORBIDDEN)
 
-        serializer = self.serializer_class(data=contract_to_create, context={'client_id': client_id}, partial=True)
+        serializer = self.serializer_class(data=contract_to_create,
+                                           context={'client_id': client_id, 'user': user},
+                                           partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return JsonResponse(serializer.data, status=status.HTTP_201_CREATED, safe=False)
