@@ -76,16 +76,13 @@ WSGI_APPLICATION = 'epic.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-_DEFAULT_DATABASE_NAME = 'epic_crm_db'
-_DB_USER = 'admin'
-_DB_USER_PASSWORD = 'admin'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': _DEFAULT_DATABASE_NAME,
-        'USER': _DB_USER,
-        'PASSWORD': _DB_USER_PASSWORD,
+        'NAME': 'epic_crm_db',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -146,39 +143,39 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # LOGGING
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'verbose': {
-#             'format': '{levelname} | {asctime} | {name} | {message}',
-#             'style': '{',
-#         }
-#     },
-#
-#     'handlers': {
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'verbose',
-#         },
-#         'hidden': {
-#             'class': 'logging.NullHandler',
-#             'formatter': 'verbose',
-#         }
-#     },
-#     'loggers': {
-#         'api': {
-#             'handlers': ['console'],
-#             'level': 'WARNING',
-#             'propagate': False,
-#         },
-#         'django': {
-#             'handlers': ['console'],
-#             'propagate': False,
-#         },
-#         'django.request': {
-#             'handlers': ['hidden'],
-#             'propagate': False,
-#         },
-#     },
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} | {asctime} | {name} | {message}',
+            'style': '{',
+        }
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'hidden': {
+            'class': 'logging.NullHandler',
+            'formatter': 'verbose',
+        }
+    },
+    'loggers': {
+        'api': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['hidden'],
+            'propagate': False,
+        },
+    },
+}
