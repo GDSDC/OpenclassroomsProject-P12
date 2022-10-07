@@ -60,7 +60,7 @@ _<dump.sql>_ : vous pouvez choisir d'initialiser/restaurer la base de données �
 
 Accédez au dossier de travail.
 ```bash
-cd softdesk
+cd epic
 ```
 
 Démarrez le serveur local.
