@@ -27,8 +27,8 @@ class GlobalEventView(APIView):
     serializer_class = EventSerializer
 
     @query_parameter_parser(
-        {'client_id': int, 'support_id': int, 'status': bool,
-         'attendees_above': float, 'attendees_below': float,
+        {'client_id': int, 'support_id': int, 'status': bool, 'client_company_name': str,
+         'client_email': str    , 'attendees_above': float, 'attendees_below': float,
          'event_date_after': datetime, 'event_date_before': datetime})
     def get(self, request, query_params: Dict[str, Any]):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__]))

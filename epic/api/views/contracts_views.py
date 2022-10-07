@@ -25,8 +25,8 @@ class GlobalContractView(APIView):
     serializer_class = ContractSerializer
 
     @query_parameter_parser(
-        {'client_id': int, 'sales_id': int, 'status': bool,
-         'amount_above': float, 'amount_below': float,
+        {'client_id': int, 'sales_id': int, 'status': bool, 'client_company_name': str,
+         'client_email': str, 'amount_above': float, 'amount_below': float,
          'payment_due_after': datetime, 'payment_due_before': datetime})
     def get(self, request, query_params: Dict[str, Any]):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.get.__name__]))

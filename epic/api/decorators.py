@@ -7,6 +7,7 @@ from django.utils.timezone import make_aware
 from rest_framework import status
 from rest_framework.response import Response
 
+from core.clients.models import Client
 from core.clients.services import client_exists
 from core.users.models import User
 from core.users.services import user_exists
@@ -14,6 +15,8 @@ from core.users.services import user_exists
 # Query Parameters Filters
 QP_FILTERS = {
     'client_id': 'client_id',
+    'client_company_name': 'client__in',
+    'client_email': 'client__in',
     'sales_id': 'sales_id',
     'support_id': 'support_id',
     'role': 'role',
@@ -79,7 +82,7 @@ def query_parameter_parser(query_params_format: Dict[str, type]):
             query_params_arg = {}
             error_messages = []
             for qp_key, qp_arg in query_params.items():
-                parsed_qp_arg = _pars_arg(qp_arg, query_params_format[qp_key])
+                parsed_qp_arg = _pars_arg(qp_arg, qp_key, query_params_format[qp_key])
                 if parsed_qp_arg is not None:
                     query_params_arg[QP_FILTERS[qp_key]] = parsed_qp_arg
                 elif qp_key == 'sales_id' or qp_key == 'support_id':
@@ -115,9 +118,14 @@ def query_parameter_parser(query_params_format: Dict[str, type]):
     return _inner
 
 
-def _pars_arg(arg, cls):
+def _pars_arg(arg, key, cls):
     if cls == str:
-        return arg
+        if key == 'client_company_name':
+            return Client.objects.filter(company_name=arg)
+        elif key == 'client_email':
+            return Client.objects.filter(email=arg)
+        else:
+            return arg
     elif cls == bool:
         return True if arg.lower() == 'true' else False if arg.lower() == 'false' else None
     elif cls == datetime:
