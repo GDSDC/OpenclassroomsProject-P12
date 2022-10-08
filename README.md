@@ -67,3 +67,5 @@ Démarrez le serveur local.
 ```bash
 python manage.py runserver
 ```
+
+Retrouvez des exemples de requêtes http en important sur Postman la collection documents/postman_collections/P12_epic_crm_api.postman_collection.json.

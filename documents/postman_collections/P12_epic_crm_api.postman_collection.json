@@ -1,0 +1,1469 @@
+{
+	"info": {
+		"_postman_id": "f6587828-e030-40f7-9d26-0de1cb4f7a70",
+		"name": "P12 - Epic API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11247386"
+	},
+	"item": [
+		{
+			"name": "1. auth",
+			"item": [
+				{
+					"name": "LOGIN",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"admin@admin.com\",\n    \"password\" : \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/users/login/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LOGOUT",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/users/logout/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"logout",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. users",
+			"item": [
+				{
+					"name": "CREATE USER",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"sales_1@email.com\",\n    \"first_name\": \"sales_1_first_name\",\n    \"last_name\": \"sales_1_last_name\",\n    \"phone\" : \"06XXXXXXXX\",\n    \"password1\": \"sales_1_password\",\n    \"password2\": \"sales_1_password\",\n    \"role\": \"SALES\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/users/signup/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"signup",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "staff user creation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"staff@staff.com\",\n    \"first_name\": \"staff_first_name\",\n    \"last_name\": \"staff_last_name\",\n    \"password1\": \"staff\",\n    \"password2\": \"staff\",\n    \"role\": \"STAFF\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/users/signup/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"users",
+										"signup",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:23:21 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, DELETE, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "127"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"email\": \"staff@staff.com\",\n    \"first_name\": \"staff_first_name\",\n    \"last_name\": \"staff_last_name\",\n    \"phone\": \"\",\n    \"mobile\": \"\",\n    \"role\": \"STAFF\"\n}"
+						},
+						{
+							"name": "sales user creation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"sales_1@email.com\",\n    \"first_name\": \"sales_1_first_name\",\n    \"last_name\": \"sales_1_last_name\",\n    \"phone\": \"06XXXXXXXX\",\n    \"password1\": \"sales_1\",\n    \"password2\": \"sales_1\",\n    \"role\": \"SALES\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/users/signup/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"users",
+										"signup",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:26:19 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, DELETE, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "143"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"email\": \"sales_1@email.com\",\n    \"first_name\": \"sales_1_first_name\",\n    \"last_name\": \"sales_1_last_name\",\n    \"phone\": \"06XXXXXXXX\",\n    \"mobile\": \"\",\n    \"role\": \"SALES\"\n}"
+						},
+						{
+							"name": "support user creation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"support_1@email.com\",\n    \"first_name\": \"support_1_first_name\",\n    \"last_name\": \"support_1_last_name\",\n    \"phone\": \"06XXXXXXXX\",\n    \"password1\": \"support_1\",\n    \"password2\": \"support_1\",\n    \"role\": \"SUPPORT\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/users/signup/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"users",
+										"signup",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:27:44 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, DELETE, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "151"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"email\": \"support_1@email.com\",\n    \"first_name\": \"support_1_first_name\",\n    \"last_name\": \"support_1_last_name\",\n    \"phone\": \"06XXXXXXXX\",\n    \"mobile\": \"\",\n    \"role\": \"SUPPORT\"\n}"
+						}
+					]
+				},
+				{
+					"name": "DELETE USER",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/users/{{user_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET ALL USERS",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/users/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "get all users",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/users/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"users",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:30:57 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, DELETE, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "953"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"email\": \"admin@admin.com\",\n        \"first_name\": \"admin\",\n        \"last_name\": \"admin\",\n        \"phone\": \"\",\n        \"mobile\": \"\",\n        \"role\": \"STAFF\"\n    },\n    {\n        \"id\": 2,\n        \"email\": \"staff@staff.com\",\n        \"first_name\": \"staff_first_name\",\n        \"last_name\": \"staff_last_name\",\n        \"phone\": \"\",\n        \"mobile\": \"\",\n        \"role\": \"STAFF\"\n    },\n    {\n        \"id\": 3,\n        \"email\": \"sales_1@email.com\",\n        \"first_name\": \"sales_1_first_name\",\n        \"last_name\": \"sales_1_last_name\",\n        \"phone\": \"06XXXXXXXX\",\n        \"mobile\": \"\",\n        \"role\": \"SALES\"\n    },\n    {\n        \"id\": 4,\n        \"email\": \"sales_2@email.com\",\n        \"first_name\": \"sales_2_first_name\",\n        \"last_name\": \"sales_2_last_name\",\n        \"phone\": \"06XXXXXXXX\",\n        \"mobile\": \"\",\n        \"role\": \"SALES\"\n    },\n    {\n        \"id\": 5,\n        \"email\": \"support_1@email.com\",\n        \"first_name\": \"support_1_first_name\",\n        \"last_name\": \"support_1_last_name\",\n        \"phone\": \"06XXXXXXXX\",\n        \"mobile\": \"\",\n        \"role\": \"SUPPORT\"\n    },\n    {\n        \"id\": 6,\n        \"email\": \"support_2@email.com\",\n        \"first_name\": \"support_2_first_name\",\n        \"last_name\": \"support_2_last_name\",\n        \"phone\": \"06XXXXXXXX\",\n        \"mobile\": \"\",\n        \"role\": \"SUPPORT\"\n    }\n]"
+						},
+						{
+							"name": "get all staff users",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/users/?role=STAFF",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"users",
+										""
+									],
+									"query": [
+										{
+											"key": "role",
+											"value": "STAFF"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:30:09 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, DELETE, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "277"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"email\": \"admin@admin.com\",\n        \"first_name\": \"admin\",\n        \"last_name\": \"admin\",\n        \"phone\": \"\",\n        \"mobile\": \"\",\n        \"role\": \"STAFF\"\n    },\n    {\n        \"id\": 2,\n        \"email\": \"staff@staff.com\",\n        \"first_name\": \"staff_first_name\",\n        \"last_name\": \"staff_last_name\",\n        \"phone\": \"\",\n        \"mobile\": \"\",\n        \"role\": \"STAFF\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "GET USER",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/users/{{user_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "404 - user not found",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/users/{{user_id}}/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"users",
+										"{{user_id}}",
+										""
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:31:19 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, DELETE, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "38"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "\"User '100' not found. Wrong user_id.\""
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "3. clients",
+			"item": [
+				{
+					"name": "GET ALL CLIENTS",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE CLIENT",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"contact_1_first_name\",\n    \"last_name\": \"contact_1_last_name\",\n    \"email\": \"contact_1@email.com\",\n    \"phone\": \"06XXXXXXXX\",\n    \"company_name\": \"contact_1_company_name\",\n    \"is_client\": \"True\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/clients/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "client creation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"client_1_first_name\",\n    \"last_name\": \"client_1_last_name\",\n    \"email\": \"client_1@email.com\",\n    \"phone\": \"06XXXXXXXX\",\n    \"company_name\": \"client_1_company_name\",\n    \"is_client\": \"True\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/clients/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"clients",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:39:11 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "201"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sales\": 3,\n    \"first_name\": \"client_1_first_name\",\n    \"last_name\": \"client_1_last_name\",\n    \"email\": \"client_1@email.com\",\n    \"phone\": \"06XXXXXXXX\",\n    \"mobile\": \"\",\n    \"company_name\": \"client_1_company_name\",\n    \"is_client\": true\n}"
+						},
+						{
+							"name": "prospect creation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"prospect_2_first_name\",\n    \"last_name\": \"prospect_2_last_name\",\n    \"email\": \"prospect_2@email.com\",\n    \"phone\": \"06XXXXXXXX\",\n    \"company_name\": \"prospect_2_company_name\",\n    \"is_prospect\": \"false\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/clients/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"clients",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:43:04 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "206"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"sales\": 4,\n    \"first_name\": \"prospect_2_first_name\",\n    \"last_name\": \"prospect_2_last_name\",\n    \"email\": \"prospect_2@email.com\",\n    \"phone\": \"06XXXXXXXX\",\n    \"mobile\": \"\",\n    \"company_name\": \"prospect_2_company_name\",\n    \"is_client\": false\n}"
+						}
+					]
+				},
+				{
+					"name": "GET CLIENT",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE CLIENT",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"new_client_first_name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE CLIENT",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. contracts",
+			"item": [
+				{
+					"name": "GET ALL CONTRACTS",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/contracts/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"contracts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE CONTRACT",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sales\": 2,\n    \"status\": true,\n    \"amount\": 20000,\n    \"payment_due\": \"2022-10-27\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/contracts/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								"contracts",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "contract creation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": true,\n    \"amount\": 20000,\n    \"payment_due\": \"2022-10-27\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/clients/{{client_id}}/contracts/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"clients",
+										"{{client_id}}",
+										"contracts",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:54:07 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "99"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"client\": 1,\n    \"sales\": 3,\n    \"status\": true,\n    \"amount\": 20000,\n    \"payment_due\": \"2022-10-27T00:00:00Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "GET CONTRACT",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/contracts/{{contract_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								"contracts",
+								"{{contract_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE CONTRACT",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sales\": 2,\n    \"status\": true,\n    \"amount\": 222222,\n    \"payment_due\": \"2022-10-27\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/contracts/{{contract_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								"contracts",
+								"{{contract_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE CONTRACT",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/contracts/{{contract_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								"contracts",
+								"{{contract_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. events",
+			"item": [
+				{
+					"name": "GET ALL EVENTS",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/events/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"events",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE EVENT",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"support\": \"\",\n    \"status\": true,\n    \"attendees\": 15000,\n    \"event_date\": \"2022-10-27\",\n    \"notes\": \"Some notes for this special event\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/events/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								"events",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "event creation",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-CSRFToken",
+										"value": "{{csrftoken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"support\": 3,\n    \"status\": true,\n    \"attendees\": 15000,\n    \"event_date\": \"2022-10-27\",\n    \"notes\": \"Some notes for this special event\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/clients/{{client_id}}/events/",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"clients",
+										"{{client_id}}",
+										"events",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 06 Oct 2022 15:55:48 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.9.12"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept, Cookie"
+								},
+								{
+									"key": "Allow",
+									"value": "GET, POST, HEAD, OPTIONS"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "147"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"client\": 1,\n    \"support\": 3,\n    \"status\": true,\n    \"attendees\": 15000,\n    \"event_date\": \"2022-10-27T00:00:00Z\",\n    \"notes\": \"Some notes for this special event\"\n}"
+						}
+					]
+				},
+				{
+					"name": "GET EVENT",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/events/{{event_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								"events",
+								"{{event_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE EVENT",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": false,\n    \"attendees\": 15555000\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/events/{{event_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								"events",
+								"{{event_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE EVENT",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-CSRFToken",
+								"value": "{{csrftoken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/clients/{{client_id}}/events/{{event_id}}/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"clients",
+								"{{client_id}}",
+								"events",
+								"{{event_id}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const cookieJar = pm.cookies.jar();",
+					"// get the csrftoken cookie",
+					"const URL = pm.environment.get(\"host\");",
+					"cookieJar.get(URL, \"csrftoken\", (error, cookie) => {",
+					"    if (error) {",
+					"        console.log(error);",
+					"    } else {",
+					"        pm.environment.set('csrftoken', cookie);",
+					"    }",
+					"});"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
