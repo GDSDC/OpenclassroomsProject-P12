@@ -8,12 +8,11 @@ from api.views.users_views import LoginView, LogoutView, SignupView, ManagerUser
 urlpatterns = [
 
     # 1. auth
-    path('users/', ManagerUserView.as_view()),
-    path('users/<int:user_id>/', ManagerUserView.as_view()),
-    path('users/signup/', ManagerUserView.as_view()),
     path('users/login/', LoginView.as_view()),
     path('users/logout/', LogoutView.as_view()),
-
+    path('users/signup/', ManagerUserView.as_view()),
+    path('users/', ManagerUserView.as_view()),
+    path('users/<int:user_id>/', ManagerUserView.as_view()),
 
     # 2. clients
     path('clients/', GlobalClientView.as_view()),
