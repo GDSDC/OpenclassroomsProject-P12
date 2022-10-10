@@ -50,7 +50,7 @@ psql -U <db_admin_name> -d epic_crm_db < documents/db/<dump.sql>
 ```
 _<db_admin_name>_ : renseignez le nom de votre administrateur de base de données (généralement _postrgre_)
 
-_<dump.sql>_ : vous pouvez choisir d'initialiser/restaurer la base de données à l'aide des dumps suivants :
+_<dump.sql>_ : vous pouvez choisir d'initialiser/restaurer la base de données à l'aide des documents/db/dumps suivantes :
 * epic_crm_db_init.sql -> base initiale peuplée uniquement d'un superuser (email=admin@admin.com / mdp=admin).
 * epic_crm_db_example.sql -> base peuplée de quelques données pour démonstration.
 
