@@ -40,7 +40,7 @@ pip install -r requirements.txt
 
 Installez PostgreSQL 14 via edb par example : https://www.enterprisedb.com/docs/postgresql_journey/02_installing/
 
-Créez une base de donnée nommée 'epic_crm_name'.
+Créez une base de donnée nommée '`epic_crm_name`'.
 
 Connexion avec Django : Si besoin, vous pouvez modifier les identifiants de l'administrateur de la base de données ainsi que d'autres détails de connexion dans le fichier epi/settings.py (voir DATABASES).
 
@@ -51,8 +51,8 @@ psql -U <db_admin_name> -d epic_crm_db < documents/db/<dump.sql>
 _<db_admin_name>_ : renseignez le nom de votre administrateur de base de données (généralement _postrgre_)
 
 _<dump.sql>_ : vous pouvez choisir d'initialiser/restaurer la base de données à l'aide des documents/db/dumps suivantes :
-* epic_crm_db_init.sql -> base initiale peuplée uniquement d'un superuser (email=admin@admin.com / mdp=admin).
-* epic_crm_db_example.sql -> base peuplée de quelques données pour démonstration.
+* `epic_crm_db_init.sql` -> base initiale peuplée uniquement d'un superuser (email=admin@admin.com / mdp=admin).
+* `epic_crm_db_example.sql` -> base peuplée de quelques données pour démonstration.
 
 ## Utilisation
 
