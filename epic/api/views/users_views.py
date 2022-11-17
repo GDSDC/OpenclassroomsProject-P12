@@ -5,7 +5,6 @@ from django.contrib.auth import login, logout
 from django.http import JsonResponse
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import LoginSerializer, SignUpSerializer, UserSerializer
@@ -27,7 +26,8 @@ class LoginView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         login(request, user)
-        return Response(f'User {user.email} logged in !', status=status.HTTP_202_ACCEPTED)
+        return JsonResponse(data={'detail' : f'User {user.email} logged in !'},
+                            status=status.HTTP_202_ACCEPTED, safe=False)
 
 
 class LogoutView(APIView):
@@ -39,7 +39,8 @@ class LogoutView(APIView):
     def get(self, request):
         user = request.user
         logout(request)
-        return Response(f'User {user.email} logged out !', status=status.HTTP_200_OK)
+        return JsonResponse(data={'detail' : f'User {user.email} logged out !'},
+                            status=status.HTTP_200_OK, safe=False)
 
 
 class SignupView(APIView):
@@ -54,7 +55,8 @@ class SignupView(APIView):
         serializer = self.serializer_class(data=user_to_create)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(data=serializer.data,
+                            status=status.HTTP_201_CREATED, safe=False)
 
 
 class ManagerUserView(APIView):
@@ -71,31 +73,33 @@ class ManagerUserView(APIView):
         if user_id:
             # check if user exists
             if not user_exists(user_id=user_id):
-                return Response(data=f"User '{user_id}' not found. Wrong user_id.",
-                                status=status.HTTP_404_NOT_FOUND)
+                return JsonResponse(data={'detail' : f"User '{user_id}' not found. Wrong user_id."},
+                                    status=status.HTTP_404_NOT_FOUND, safe=False)
             users = User.objects.get(id=user_id)
             is_many = False
         else:
             # Looking for multiple Users data
             users = User.objects.filter(**query_params)
             is_many = True
-        return JsonResponse(UserSerializer(users, many=is_many).data, status=status.HTTP_200_OK, safe=False)
+        return JsonResponse(data=UserSerializer(users, many=is_many).data,
+                            status=status.HTTP_200_OK, safe=False)
 
     def post(self, request):
         user_to_create = request.data
         serializer = SignUpSerializer(data=user_to_create)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(data=serializer.data, status=status.HTTP_201_CREATED, safe=False)
 
     def delete(self, request, user_id):
         logger = logging.getLogger('.'.join([__name__, self.__class__.__name__, self.delete.__name__]))
 
         # check if user_to_delete exists
         if not user_exists(user_id=user_id):
-            return Response(data=f"User '{user_id}' not found. Wrong user_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"User '{user_id}' not found. Wrong user_id."},
+                                status=status.HTTP_404_NOT_FOUND, safe=False)
 
         user_to_delete = User.objects.get(id=user_id)
         user_to_delete.delete()
-        return Response('User successfully deleted !', status=status.HTTP_200_OK)
+        return JsonResponse(data={'detail' : 'User successfully deleted !'},
+                            status=status.HTTP_200_OK, safe=False)

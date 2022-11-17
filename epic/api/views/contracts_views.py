@@ -5,7 +5,6 @@ from typing import Any, Dict
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 
 from api.decorators import user_has_role, query_parameter_parser
@@ -34,8 +33,8 @@ class GlobalContractView(APIView):
         # sales_id query parameter /// check if user exists and is Sales
         if 'sales_id' in query_params.keys() and query_params['sales_id'] is not None:
             if not user_exists(query_params['sales_id']):
-                return Response(data=f"Sales '{query_params['sales_id']}' not found !",
-                                status=status.HTTP_404_NOT_FOUND)
+                return JsonResponse(data={'detail' : f"Sales '{query_params['sales_id']}' not found !"},
+                                status=status.HTTP_404_NOT_FOUND, safe=False)
             else:
                 # check if 'sales_id' correspond to a SALES
                 qp_user_role = User.objects.get(id=query_params['sales_id']).role
@@ -43,14 +42,15 @@ class GlobalContractView(APIView):
                     # only log for this part
                     logger.warning(f"User '{query_params['sales_id']}' is {qp_user_role}, not SALES !")
 
+
         # client_id query parameter /// check if client exists
         if 'client_id' in query_params.keys():
             if not client_exists(query_params['client_id']):
-                return Response(data=f"Client '{query_params['client_id']}' not found !",
-                                status=status.HTTP_404_NOT_FOUND)
+                return JsonResponse(data={'detail' : f"Client '{query_params['client_id']}' not found !"},
+                                status=status.HTTP_404_NOT_FOUND, safe=False)
 
         contracts = Contract.objects.filter(**query_params)
-        return JsonResponse(self.serializer_class(contracts, many=True).data, status=status.HTTP_200_OK, safe=False)
+        return JsonResponse(data=self.serializer_class(contracts, many=True).data, status=status.HTTP_200_OK, safe=False)
 
     @user_has_role({User.Role.STAFF, User.Role.SALES})
     def post(self, request, client_id):
@@ -58,8 +58,8 @@ class GlobalContractView(APIView):
 
         # check if client exists
         if not client_exists(client_id):
-            return Response(data=f"Contact '{client_id}' not found. Wrong client_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Contact '{client_id}' not found. Wrong client_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         contract_to_create = request.data
         client = Client.objects.get(id=client_id)
@@ -71,8 +71,8 @@ class GlobalContractView(APIView):
                 f"Access forbidden ! User '{user.email}' is not attached to client '{client_id}' "
                 f"({contract_to_create.first_name} {contract_to_create.last_name} "
                 f"from {contract_to_create.company_name} company) or admin.")
-            return Response('Access forbidden ! You are not attached to the client or admin.',
-                            status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({'detail' : 'Access forbidden ! You are not attached to the client or admin.'},
+                            status=status.HTTP_403_FORBIDDEN, safe=False)
 
         serializer = self.serializer_class(data=contract_to_create,
                                            context={'client_id': client_id, 'user': user},
@@ -93,13 +93,13 @@ class ContractView(APIView):
 
         # check if client exists
         if not client_exists(client_id):
-            return Response(data=f"Contact '{client_id}' not found. Wrong client_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Contact '{client_id}' not found. Wrong client_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         # check if contract exists
         if not contract_exists(contract_id):
-            return Response(data=f"Contract '{contract_id}' not found. Wrong contract_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Contract '{contract_id}' not found. Wrong contract_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         contract = Contract.objects.get(id=contract_id)
 
@@ -107,8 +107,8 @@ class ContractView(APIView):
         if not contract.client.id == client_id:
             logger.warning(f"Contract '{contract_id}' does not belong to Client '{client_id}' "
                            f"but Client '{contract.client_id}' !")
-            return Response(data=f"Contract '{contract_id}' does not belong to Client '{client_id}' !",
-                            status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(data={'detail' : f"Contract '{contract_id}' does not belong to Client '{client_id}' !"},
+                            status=status.HTTP_400_BAD_REQUEST, safe=False)
 
         return JsonResponse(self.serializer_class(contract).data, status=status.HTTP_200_OK, safe=False)
 
@@ -118,13 +118,13 @@ class ContractView(APIView):
 
         # check if client exists
         if not client_exists(client_id):
-            return Response(data=f"Contact '{client_id}' not found. Wrong client_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Contact '{client_id}' not found. Wrong client_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         # check if contract exists
         if not contract_exists(contract_id):
-            return Response(data=f"Contract '{contract_id}' not found. Wrong contract_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Contract '{contract_id}' not found. Wrong contract_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         contract_updated_data = request.data
         contract_to_update = Contract.objects.get(id=contract_id)
@@ -133,8 +133,8 @@ class ContractView(APIView):
         if not contract_to_update.client_id == client_id:
             logger.warning(f"Contract '{contract_id}' does not belong to Client '{client_id}' "
                            f"but Client '{contract_to_update.client_id}' !")
-            return Response(data=f"Contract '{contract_id}' does not belong to Client '{client_id}' !",
-                            status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(data={'detail' : f"Contract '{contract_id}' does not belong to Client '{client_id}' !"},
+                            status=status.HTTP_400_BAD_REQUEST, safe=False)
 
         # check if user is owner of client (ie is sales of the client)
         user = request.user
@@ -144,8 +144,8 @@ class ContractView(APIView):
                 f"Access forbidden ! User '{user.email}' is not attached to client '{client_id}' "
                 f"({client_to_update.first_name} {client_to_update.last_name} "
                 f"from {client_to_update.company_name} company) or admin.")
-            return Response('Access forbidden ! You are not attached to the client or admin.',
-                            status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({'detail' : 'Access forbidden ! You are not attached to the client or admin.'},
+                            status=status.HTTP_403_FORBIDDEN, safe=False)
 
         serializer = self.serializer_class(contract_to_update, data=contract_updated_data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -158,13 +158,13 @@ class ContractView(APIView):
 
         # check if client exists
         if not client_exists(client_id):
-            return Response(data=f"Contact '{client_id}' not found. Wrong client_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Contact '{client_id}' not found. Wrong client_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         # check if contract exists
         if not contract_exists(contract_id):
-            return Response(data=f"Contract '{contract_id}' not found. Wrong contract_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Contract '{contract_id}' not found. Wrong contract_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         contract_to_delete = Contract.objects.get(id=contract_id)
 
@@ -172,8 +172,8 @@ class ContractView(APIView):
         if not contract_to_delete.client_id == client_id:
             logger.warning(f"Contract '{contract_id}' does not belong to Client '{client_id}' "
                            f"but Client '{contract_to_delete.client_id}' !")
-            return Response(data=f"Contract '{contract_id}' does not belong to Client '{client_id}' !",
-                            status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(data={'detail' : f"Contract '{contract_id}' does not belong to Client '{client_id}' !"},
+                            status=status.HTTP_400_BAD_REQUEST, safe=False)
 
         contract_to_delete.delete()
-        return Response('Contract deleted successfully !', status=status.HTTP_200_OK)
+        return JsonResponse({'detail' : 'Contract deleted successfully !'}, status=status.HTTP_200_OK, safe=False)

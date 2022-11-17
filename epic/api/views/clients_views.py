@@ -4,7 +4,6 @@ from typing import Any, Dict
 from django.http import JsonResponse
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 
 from api.serializers import ClientSerializer
@@ -28,8 +27,8 @@ class GlobalClientView(APIView):
         # sales_id query parameter /// check if user exists and is Sales
         if 'sales_id' in query_params.keys() and query_params['sales_id'] is not None:
             if not user_exists(query_params['sales_id']):
-                return Response(data=f"Sales '{query_params['sales_id']}' not found !",
-                                status=status.HTTP_404_NOT_FOUND)
+                return JsonResponse(data={'detail' : f"Sales '{query_params['sales_id']}' not found !"},
+                                status=status.HTTP_404_NOT_FOUND, safe=False)
             else:
                 # check if 'sales_id' correspond to a SALES
                 qp_user_role = User.objects.get(id=query_params['sales_id']).role
@@ -46,7 +45,7 @@ class GlobalClientView(APIView):
         serializer = self.serializer_class(data=client_to_create, context={'user': request.user})
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED, safe=False)
 
 
 class ClienttView(APIView):
@@ -58,8 +57,8 @@ class ClienttView(APIView):
 
         # check if client exists
         if not client_exists(client_id):
-            return Response(data=f"Client '{client_id}' not found. Wrong client_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Client '{client_id}' not found. Wrong client_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         client = Client.objects.get(id=client_id)
         return JsonResponse(self.serializer_class(client).data, status=status.HTTP_200_OK, safe=False)
@@ -70,8 +69,8 @@ class ClienttView(APIView):
 
         # check if client exists
         if not client_exists(client_id):
-            return Response(data=f"Client '{client_id}' not found. Wrong client_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Client '{client_id}' not found. Wrong client_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         client_updated_data = request.data
         client_to_update = Client.objects.get(id=client_id)
@@ -83,8 +82,8 @@ class ClienttView(APIView):
                 f"Access forbidden ! User '{user.email}' is not attached to client '{client_id}' "
                 f"({client_to_update.first_name} {client_to_update.last_name} "
                 f"from {client_to_update.company_name} company) or ADMIN.")
-            return Response('Access forbidden ! You are not attached to the client or admin.',
-                            status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse(data={'detail' : 'Access forbidden ! You are not attached to the client or admin.'},
+                            status=status.HTTP_403_FORBIDDEN, safe=False)
 
         serializer = self.serializer_class(client_to_update, data=client_updated_data,
                                            context={'user': request.user}, partial=True)
@@ -97,9 +96,9 @@ class ClienttView(APIView):
 
         # check if client exists
         if not client_exists(client_id):
-            return Response(data=f"Client '{client_id}' not found. Wrong client_id.",
-                            status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(data={'detail' : f"Client '{client_id}' not found. Wrong client_id."},
+                            status=status.HTTP_404_NOT_FOUND, safe=False)
 
         client_to_delete = Client.objects.get(id=client_id)
         client_to_delete.delete()
-        return JsonResponse('Client deleted successfully !', status=status.HTTP_200_OK, safe=False)
+        return JsonResponse(data={'detail' : 'Client deleted successfully !'}, status=status.HTTP_200_OK, safe=False)
