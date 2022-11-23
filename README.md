@@ -1,8 +1,69 @@
-# OpenclassroomsProject-P12
-OpenClassRooms Project-P12 est un projet Python ayant un but d'apprentissage dans le cadre de la formation OpenClassRooms Développeur d'Application Python.  
-Thème du projet : Développez une architecture back-end sécurisée en utilisant Django ORM
+<h3 align="center">
+    <img alt="Logo" title="#logo" width="250px" src="/assets/16007804386673_P10.png">
+    <br>
+</h3>
 
 
+# Openclassrooms Project P12
+
+- [Objectif](#obj)
+- [Compétences](#competences)
+- [Technologies](#techs)
+- [Requirements](#reqs)
+- [Architecture](#architecture)
+- [Configuration locale](#localconfig)
+- [Présentation](#presentation)
+
+<a id="obj"></a>
+## Objectif
+
+Epic Events est une entreprise de conseil et de gestion dans l'événementiel qui répond aux besoins des start-up voulant organiser des « fêtes épiques ». L'objectif de ce projet est d'élaborer un système CRM sécurisé interne à l'entreprise.
+
+<a id="competences"></a>
+## Compétences acquises
+- Élaborer l'architecture d'une base de données relationnelle
+- Mettre en œuvre une base de données sécurisée avec Django ORM et PostgreSQL
+
+<a id="techs"></a>
+## Technologies Utilisées
+- [Python3](https://www.python.org/)
+- [Django](https://www.djangoproject.com/)
+- [DjangoRestFramework](https://www.django-rest-framework.org/)
+- [PostgreSQL](https://www.postgresql.org/)
+
+<a id="reqs"></a>
+## Requirements
+- django
+- djangorestframework
+- psycopg2-binary
+- python-dotenv
+
+<a id="architecture"></a>
+## Architecture et répertoires
+```
+Project
+├── epic
+│   ├── api
+│   ├── core : répertoire contenant les applications de notre CRM
+│   │    ├── clients
+│   │    ├── contracts
+│   │    ├── events
+│   │    ├── users
+│   ├── epic : répertoire du projet django
+│   │    ├── settings.py : fichier de réglages django
+│   │    ├── urls.py : fichier principal des endpoints
+│   │    ├── ..
+│   ├── manage.py : fichier principal de gestion django
+|── requirements.txt
+|── documents
+│   ├── db : dumps pour la configuration de la base de données
+│   ├── postman_collections : collections Postman
+│   ├── ERD.png : diagramme entité-relation
+│   ├── ..
+```
+
+<a id="localconfig"></a>
+## Configuration locale
 ## Installation
 
 ### 1. Récupération du projet sur votre machine locale
@@ -69,3 +130,8 @@ python manage.py runserver
 ```
 
 Retrouvez des exemples de requêtes http en important sur Postman la collection documents/postman_collections/P12_epic_crm_api.postman_collection.json.
+
+<a id="presentation"></a>
+### Présentation
+
+[<img alt="presentation" width="480px" src="/assets/presentation.png">](https://docs.google.com/presentation/d/e/2PACX-1vQdHqIKs6YUb5Qyri8rIGuURQLU5yvs9xVZcI4BmV5vMw66hsqEFeAadzbF8ocgHJvwm0VIXmoVBNI5/pub?start=false&loop=false&delayms=5000)
