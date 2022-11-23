@@ -4,7 +4,7 @@
 </h3>
 
 
-# Openclassrooms Project P12
+# OpenClassrooms Projet P12
 
 - [Objectif](#obj)
 - [Compétences](#competences)
